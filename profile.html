@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>EdQuest — Профиль</title>
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+<div class="bg"><div class="grid"></div></div>
+
+<div class="layout">
+  <aside class="sidebar">
+    <a id="logoLink" href="index.html" class="brand"><div class="logo"></div> EdQuest</a>
+    <nav class="nav">
+      <a data-key="home" href="index.html">🏠 Главная</a>
+      <a data-key="game" href="game.html">▶️ Игра</a>
+      <a data-key="profile" href="profile.html">👤 Профиль</a>
+      <a data-key="store" href="store.html">🛍️ Магазин</a>
+      <a data-key="ref" href="referrals.html">🤝 Рефералы</a>
+      <a data-key="settings" href="settings.html">⚙️ Настройки</a>
+      <a data-key="help" href="help.html">❓ Помощь</a>
+    </nav>
+    <div class="side-stat">
+      <div class="stat-chip">🎓 Уровень: <b id="uiLevel">1</b></div>
+      <div class="xp-bar"><div class="xp-fill" id="uiXpFill"></div></div>
+      <div class="stat-chip">🪙 Монеты: <b id="uiCoins">0</b></div>
+      <div class="footer-mini">© EdQuest • v9.1.3</div>
+    </div>
+  </aside>
+
+  <main class="content">
+    <div class="container">
+      <section class="panel">
+        <div class="title">👤 Профиль</div>
+        <div style="display:flex;gap:10px;flex-wrap:wrap">
+          <div class="stat-chip">🎓 Уровень <b id="pfLevel">1</b></div>
+          <div class="stat-chip">⭐ Опыт <b id="pfXp">0 / 100</b></div>
+          <div class="stat-chip">🪙 Монеты <b id="pfCoins">0</b></div>
+          <div class="stat-chip">🎯 Точность <b id="pfAcc">0%</b></div>
+          <div class="stat-chip">🔥 Макс. серия <b id="pfMaxStreak">0</b></div>
+          <div class="stat-chip">✅ Решено <b id="pfSolved">0</b></div>
+        </div>
+        <div class="gridgap" style="margin-top:8px">
+          <canvas class="chart" id="chartSubjects"></canvas>
+        </div>
+      </section>
+    </div>
+  </main>
+</div>
+
+<footer class="dock">
+  <div class="row">
+    <a data-key="home" href="index.html">🏠<span>Главная</span></a>
+    <a data-key="game" href="game.html">▶️<span>Игра</span></a>
+    <a data-key="profile" href="profile.html">👤<span>Профиль</span></a>
+    <a data-key="store" href="store.html">🛍️<span>Магазин</span></a>
+    <a data-key="ref" href="referrals.html">🤝<span>Рефералы</span></a>
+  </div>
+</footer>
+
+<script src="js/main.js"></script>
+<script src="js/charts.js"></script>
+<script src="js/profile.js"></script>
+</body>
+</html>
