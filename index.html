@@ -3,253 +3,382 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>EdQuest — ЕГЭ (v5, левое меню)</title>
+<title>EdQuest — ЕГЭ (v8 • Cyber/Neon)</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 128 128'><rect width='128' height='128' rx='26' fill='%2307131c'/><circle cx='64' cy='64' r='44' fill='none' stroke='%230ef' stroke-width='10'/><text x='50%' y='57%' text-anchor='middle' font-size='48' fill='%230ef'>⚡</text></svg>">
 <style>
-  :root{
-    --fs-12: clamp(12px, 0.78rem + 0.1vw, 14px);
-    --fs-14: clamp(14px, 0.85rem + 0.2vw, 16px);
-    --fs-16: clamp(16px, 0.9rem + 0.3vw, 18px);
-    --fs-18: clamp(18px, 1rem + 0.45vw, 22px);
-    --fs-22: clamp(22px, 1.05rem + 0.8vw, 28px);
-    --fs-28: clamp(24px, 1.2rem + 1.2vw, 32px);
-    --panel:#0f1722; --panel-2:#101b2b; --bg:#0b1117;
-    --text:#f3f7ff; --muted:#9db3cf;
-    --green:#58CC02; --blue:#1CB0F6; --gold:#FFC715;
-    --ok:#00d27a; --bad:#ff6b6b;
-    --radius: 12px;
-    --sidebar-w: 260px;
-    --content-max: 1400px;
-  }
-  *{box-sizing:border-box}
-  html,body{height:100%}
-  body{ margin:0; font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial;
-        background: radial-gradient(1200px 800px at 10% -10%, rgba(28,176,246,.08), rgba(0,0,0,0) 40%), var(--bg);
-        color: var(--text); -webkit-font-smoothing: antialiased; }
-  /* ===== Left sidebar (fixed) ===== */
-  .sidebar{
-    position: fixed; left:0; top:0; bottom:0; width: var(--sidebar-w);
-    background: rgba(15,23,34,.98); border-right:1px solid rgba(255,255,255,.08);
-    display:flex; flex-direction:column; padding:16px; gap:12px; z-index:5;
-  }
-  .brand{ display:flex; align-items:center; gap:10px; font-weight:900; font-size: var(--fs-18); cursor:pointer; padding:8px 6px; border-radius:10px }
-  .logo{ width:28px; height:28px; border-radius:8px; background: conic-gradient(from 0deg, var(--green), var(--blue), var(--gold), var(--green)); box-shadow: inset 0 0 20px rgba(255,255,255,.18); }
-  nav .tab{ display:flex; align-items:center; gap:10px; padding:10px 12px; border-radius:10px; color:var(--muted); font-weight:900; cursor:pointer }
-  nav .tab.active{ color:var(--text); background: rgba(255,255,255,.08) }
-  .side-stat{ margin-top:auto; display:grid; gap:8px }
-  .pill{ background: rgba(255,255,255,.08); padding:6px 10px; border-radius:999px; font-weight:900; font-size: var(--fs-12); cursor:pointer; text-align:center }
-  .xp-bar{ width:100%; height:10px; background: rgba(255,255,255,.12); border-radius:999px; overflow:hidden }
-  .xp-fill{ height:100%; width:0%; background: linear-gradient(90deg, var(--green), var(--blue)) }
-  .coins{ text-align:center; font-weight:900; color:var(--gold) }
+/* ====== THEME: CYBER/NEON + GLASS ====== */
+:root{
+  /* Neon palette */
+  --bg-0: #050a10;
+  --bg-1: #07131c;  /* glass base */
+  --bg-2: #0a1c2b;
+  --glass: rgba(10, 28, 43, .55);
+  --line: rgba(0, 255, 255, .14);
+  --text: #e8fbff;
+  --muted: #9ad0df;
+  --cyan: #00E7F0;
+  --aqua: #00F0FF;
+  --mag: #FF4AF2;
+  --lime: #9CF000;
+  --amber: #FFC715;
+  --danger: #ff6b88;
+  --ok: #00e79a;
+  --blue: #1CB0F6;
+  --violet: #7C4DFF;
+  --radius: 14px;
+  --gap: 16px;
+  --sidebar-w: 300px;
+  --content-max: 1680px;
+  --sticky: 18px;
+}
+*{box-sizing:border-box}
+html,body{height:100%}
+body{
+  margin:0; font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial;
+  background:
+    radial-gradient(1200px 800px at 10% -10%, rgba(0,240,255,.07), transparent 40%),
+    radial-gradient(1200px 800px at 90% 110%, rgba(255,74,242,.06), transparent 40%),
+    var(--bg-0);
+  color: var(--text);
+  -webkit-font-smoothing: antialiased; line-height:1.45;
+}
+@media (prefers-reduced-motion:no-preference){
+  body{ background-attachment: fixed; }
+}
+/* Neon glow helper */
+.glow-cyan{ box-shadow: 0 0 0 1px rgba(0,255,255,.25), 0 0 14px rgba(0,255,255,.25) inset, 0 0 24px rgba(0,255,255,.25) }
+.glow-mag{ box-shadow: 0 0 0 1px rgba(255,74,242,.25), 0 0 14px rgba(255,74,242,.25) inset, 0 0 24px rgba(255,74,242,.25) }
+.text-glow{ text-shadow: 0 0 8px rgba(0,255,255,.3) }
 
-  /* ===== Content area ===== */
-  .content{ margin-left: var(--sidebar-w); padding:20px; }
-  .container{ width:min(var(--content-max), 100%); margin:0 auto; display:grid; gap:16px }
-  .panel{ background: var(--panel); border:1px solid rgba(255,255,255,.08); border-radius: var(--radius); padding:16px; }
-  .title{ font-size: var(--fs-22); font-weight:900; margin-bottom:6px }
-  .muted{ color: var(--muted) }
-  .btn{ appearance:none; border:1px solid rgba(255,255,255,.14); border-radius:12px; padding:12px 14px; background: linear-gradient(180deg,#1b2740,#0f1a2b); color:var(--text); font-weight:900; cursor:pointer }
-  .btn.primary{ background: linear-gradient(180deg,#1f3f26,#0f2a14); border-color: rgba(88,204,2,.6) }
-  .btn.block{ width:100% }
+/* ===== LAYOUT ===== */
+.layout{ display:grid; grid-template-columns: var(--sidebar-w) 1fr; min-height:100dvh }
+.sidebar{
+  position: sticky; top:0; align-self:start; height:100dvh;
+  background: linear-gradient(180deg, rgba(7,19,28,.85), rgba(7,19,28,.75));
+  border-right: 1px solid var(--line);
+  backdrop-filter: blur(10px);
+  display:flex; flex-direction:column; padding:18px; gap:12px; z-index:6;
+}
+.brand{ display:flex; align-items:center; gap:12px; font-weight:900; font-size: 20px; cursor:pointer; padding:10px 8px; border-radius:12px }
+.logo{ width:30px; height:30px; border-radius:8px; background:
+  radial-gradient(circle at 30% 30%, #0ef, transparent 60%),
+  radial-gradient(circle at 70% 70%, #f0f, transparent 60%),
+  #09131d; border:1px solid var(--line); box-shadow: 0 0 14px rgba(0,255,255,.35) }
+nav{ display:flex; flex-direction:column; gap:10px; overflow:auto; padding-right:4px }
+.tab{ display:flex; align-items:center; gap:10px; padding:10px 12px; border-radius:12px; color:var(--muted); font-weight:900; cursor:pointer; border:1px solid transparent }
+.tab:hover{ background: rgba(0,255,255,.05); border-color: var(--line) }
+.tab.active{ color:var(--text); background: rgba(0,255,255,.08); border-color: var(--line) }
+.tab svg{ width:22px; height:22px; filter: drop-shadow(0 0 8px rgba(0,255,255,.3)); }
+.side-stat{ margin-top:auto; display:grid; gap:10px }
+.stat-chip{ display:flex; align-items:center; gap:10px; padding:10px; border-radius:12px; background: var(--glass); border:1px solid var(--line) }
+.xp-bar{ width:100%; height:10px; background: rgba(255,255,255,.05); border:1px solid var(--line); border-radius:999px; overflow:hidden }
+.xp-fill{ height:100%; width:0%; background: linear-gradient(90deg, #0ff, #f0f) }
+.footer-mini{ font-size:12px; color: var(--muted); text-align:center }
 
-  .grid{ display:grid; gap:12px }
-  .cols-2{ grid-template-columns: repeat(2, minmax(0,1fr)) }
-  .cols-3{ grid-template-columns: repeat(3, minmax(0,1fr)) }
-  @media (max-width: 1200px){ .cols-2,.cols-3{ grid-template-columns: 1fr } }
+/* Mobile bottom nav */
+.mb{ display:none }
+@media (max-width: 900px){
+  .layout{ grid-template-columns: 1fr }
+  .sidebar{ display:none }
+  .mb{ display:block; position: sticky; bottom:0; z-index:7; background: rgba(7,19,28,.9); border-top:1px solid var(--line); backdrop-filter: blur(8px) }
+  .mb .row{ display:flex; gap:6px; padding:8px }
+  .mb .tab{ flex:1; justify-content:center }
+}
 
-  /* Hero */
-  .hero{ display:grid; grid-template-columns: 1fr 340px; gap:16px; align-items:center }
-  @media (max-width: 1000px){ .hero{ grid-template-columns: 1fr } }
-  .hero svg{ width:100%; height:auto; opacity:.9; filter: drop-shadow(0 6px 20px rgba(0,0,0,.35)); }
+/* Content */
+.content{ padding:20px }
+.container{ width:min(var(--content-max), 100%); margin:0 auto; display:grid; gap: var(--gap) }
+.panel{
+  background: var(--glass); border:1px solid var(--line); border-radius: var(--radius); padding:16px;
+  backdrop-filter: blur(10px); position:relative; overflow:hidden;
+}
+.panel:before{ /* subtle scanlines */
+  content:""; position:absolute; inset:0; background:
+    repeating-linear-gradient(0deg, rgba(255,255,255,.02), rgba(255,255,255,.02) 1px, transparent 2px);
+  pointer-events:none; mix-blend-mode: overlay; opacity:.4;
+}
+.title{ font-size: clamp(20px, 1.2rem + .5vw, 30px); font-weight:900; margin:0 0 8px; display:flex; align-items:center; gap:10px }
+.kbd{ font: 600 12px/1 ui-monospace, Menlo, Consolas; background:#08131d; border:1px solid var(--line); padding:2px 6px; border-radius:6px; color:#cfe9ff }
+.btn{ appearance:none; border:1px solid var(--line); border-radius:12px; padding:12px 14px; background: linear-gradient(180deg,#0b1c2c,#07131c); color:var(--text); font-weight:900; cursor:pointer }
+.btn.primary{ background: linear-gradient(180deg,#0b2f3f,#0a1e2a); box-shadow: 0 0 10px rgba(0,255,255,.25) inset }
+.btn.ghost{ background:transparent }
+.btn.block{ width:100% }
+.btn:active{ transform: translateY(1px) }
+.muted{ color: var(--muted) }
+.grid{ display:grid; gap:12px }
+.cols-2{ grid-template-columns: repeat(2, minmax(0,1fr)) }
+.cols-3{ grid-template-columns: repeat(3, minmax(0,1fr)) }
+@media (max-width: 1200px){ .cols-2,.cols-3{ grid-template-columns: 1fr } }
 
-  /* Play UI: session right on desktop, above on smaller */
-  .play-wrap{ display:grid; grid-template-columns: 2fr 1fr; gap:16px }
-  @media (max-width: 1200px){ .play-wrap{ grid-template-columns: 1fr } }
-  .q-title{ font-size: var(--fs-18); font-weight:900; margin-bottom: 10px }
-  .choice{ padding: 14px; border-radius: 12px; border:1px solid rgba(255,255,255,.12); background: linear-gradient(180deg,#121d2d,#0e1725); font-weight:800; cursor:pointer }
-  .choice.correct{ outline:2px solid var(--ok) } .choice.wrong{ outline:2px solid var(--bad) }
-  .answer-input{ width:100%; padding:14px 16px; border-radius:12px; background:#0f1a2b; border:1px solid rgba(255,255,255,.16); color:var(--text); font-size: var(--fs-16) }
-  .order-list{ list-style:none; margin:0; padding:0; display:grid; gap:10px }
-  .order-item{ padding:14px; border-radius:12px; background:#0f1a2b; border:1px solid rgba(255,255,255,.16); cursor:grab }
-  .order-item.dragging{ opacity:.6 }
-  .stat-row{ display:flex; gap:12px; flex-wrap:wrap }
-  .stat{ display:flex; align-items:center; gap:10px; background: rgba(255,255,255,.06); border-radius:12px; padding:8px 12px }
-  .stat b{ font-size: var(--fs-18) }
-  canvas.chart{ width:100%; height: 180px }
+/* HERO */
+.hero{ display:grid; grid-template-columns: 1fr 420px; gap:16px; align-items:center }
+@media (max-width: 1100px){ .hero{ grid-template-columns: 1fr } }
+.hero .hud{ border:1px dashed var(--line); border-radius:14px; padding:10px; }
+.hero .chip{ display:inline-flex; align-items:center; gap:8px; padding:6px 10px; border-radius:999px; background: rgba(0,255,255,.06); border:1px solid var(--line) }
 
-  /* Shop */
-  .shop-grid{ display:grid; gap:12px; grid-template-columns: repeat(3, minmax(0,1fr)); }
-  @media (max-width: 1200px){ .shop-grid{ grid-template-columns: 1fr 1fr } }
-  @media (max-width: 700px){ .shop-grid{ grid-template-columns: 1fr } }
-  .sticker{ background: var(--panel-2); border:1px solid rgba(255,255,255,.08); border-radius:12px; padding:12px; display:grid; gap:8px; text-align:center }
-  .sticker .img{ font-size:42px; }
-  .price{ font-weight:900; color: var(--gold) }
+/* PLAY */
+.play-wrap{ display:grid; grid-template-columns: 2fr 1fr; gap:var(--gap) }
+@media (max-width: 1200px){ .play-wrap{ grid-template-columns: 1fr } }
+.session-sticky{ position: sticky; top: var(--sticky); align-self: start }
+.breadcrumbs{ display:flex; gap:8px; align-items:center; font-weight:800; color:var(--muted) }
+.linklike{ cursor:pointer; text-decoration: underline; text-decoration-style:dotted }
+.q-title{ font-size: clamp(18px, 1rem + .4vw, 24px); font-weight:900; margin-bottom: 12px }
+.choice{ padding: 14px; border-radius: 12px; border:1px solid var(--line); background: linear-gradient(180deg,rgba(8,20,32,.8),rgba(6,16,25,.8)); font-weight:800; cursor:pointer }
+.choice.correct{ outline:2px solid var(--ok); box-shadow: 0 0 12px rgba(0,255,170,.3) inset }
+.choice.wrong{ outline:2px solid var(--danger); box-shadow: 0 0 12px rgba(255,80,120,.25) inset }
+.answer-input{ width:100%; padding:14px 16px; border-radius:12px; background:rgba(6,16,25,.8); border:1px solid var(--line); color:var(--text); font-size: 16px }
+.order-list{ list-style:none; margin:0; padding:0; display:grid; gap:10px }
+.order-item{ padding:14px; border-radius:12px; background:rgba(6,16,25,.8); border:1px solid var(--line); cursor:grab }
+.order-item.dragging{ opacity:.6 }
+.stat-row{ display:flex; gap:10px; flex-wrap:wrap }
+.stat{ display:flex; align-items:center; gap:10px; background: rgba(255,255,255,.03); border:1px solid var(--line); border-radius:12px; padding:8px 12px }
+.stat b{ font-size: clamp(16px, .9rem + .2vw, 20px) }
+canvas.chart{ width:100%; height: 220px }
 
-  /* Toast (centered) */
-  .toast{ position: fixed; left:50%; bottom: 60px; transform: translateX(-50%);
-          background: rgba(10,16,24,.95); border:1px solid rgba(255,255,255,.12); padding: 12px 14px; border-radius: 10px; display:none; z-index:10 }
+/* SHOP */
+.shop-grid{ display:grid; gap:12px; grid-template-columns: repeat(4, minmax(0,1fr)); }
+@media (max-width: 1400px){ .shop-grid{ grid-template-columns: repeat(3, minmax(0,1fr)); } }
+@media (max-width: 900px){ .shop-grid{ grid-template-columns: 1fr 1fr } }
+@media (max-width: 600px){ .shop-grid{ grid-template-columns: 1fr } }
+.sticker{ background: rgba(6,16,25,.7); border:1px solid var(--line); border-radius:12px; padding:12px; display:grid; gap:8px; text-align:center }
+.sticker .img{ display:flex; align-items:center; justify-content:center; height:64px }
+.price{ font-weight:900; color: var(--amber) }
 
-  /* Modals */
-  .modal{ position: fixed; inset:0; background: rgba(0,0,0,.5); display:none; align-items:center; justify-content:center; z-index:20 }
-  .modal .card{ width:min(520px, 92vw); background: var(--panel); border:1px solid rgba(255,255,255,.12); border-radius:14px; padding:16px; box-shadow: 0 12px 32px rgba(0,0,0,.5) }
+/* TOAST & MODALS */
+.toast{ position: fixed; left:50%; bottom: 60px; transform: translateX(-50%);
+  background: rgba(7,19,28,.92); border:1px solid var(--line); padding: 12px 14px; border-radius: 10px; display:none; z-index:10; backdrop-filter: blur(8px) }
+.modal{ position: fixed; inset:0; background: rgba(0,0,0,.5); display:none; align-items:center; justify-content:center; z-index:20 }
+.modal .card{ width:min(640px, 92vw); background: var(--glass); border:1px solid var(--line); border-radius:14px; padding:16px; backdrop-filter: blur(10px) }
+
+/* 4K optimization: prevent extreme stretching; increase gaps slightly */
+@media (min-width: 2560px){
+  :root{ --gap: 18px; --sidebar-w: 340px; }
+  .content{ padding:28px }
+  .panel{ padding:20px }
+}
 </style>
 </head>
 <body>
-<!-- Sidebar -->
-<aside class="sidebar">
-  <div class="brand" id="logo"><div class="logo"></div> EdQuest</div>
-  <nav>
-    <div class="tab active" data-view="home">🏠 Главная</div>
-    <div class="tab" data-view="play">▶️ Игра</div>
-    <div class="tab" data-view="profile">👤 Профиль</div>
-    <div class="tab" data-view="shop">🛍 Магазин</div>
-    <div class="tab" data-view="referrals">🤝 Рефералы</div>
-  </nav>
-  <div class="side-stat">
-    <div class="pill" id="levelPill">Ур. <span id="uiLevel">1</span></div>
-    <div class="xp-bar"><div class="xp-fill" id="uiXpFill"></div></div>
-    <div class="coins">🪙 <span id="uiCoins">0</span></div>
-  </div>
-</aside>
+<div class="layout">
+  <!-- Sidebar (desktop) -->
+  <aside class="sidebar" aria-label="Главное меню">
+    <div class="brand" id="logo" role="button" tabindex="0"><div class="logo"></div> <span class="text-glow">EdQuest</span></div>
+    <nav id="nav">
+      <div class="tab active" data-view="home" tabindex="0">
+        <!-- Neon Home icon -->
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 10.5 12 3l9 7.5v9a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1v-9Z" fill="none" stroke="#0ff" stroke-width="1.8"/></svg>
+        Главная
+      </div>
+      <div class="tab" data-view="play" tabindex="0">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 6v12l10-6-10-6Z" fill="none" stroke="#0ff" stroke-width="1.8"/></svg>
+        Игра
+      </div>
+      <div class="tab" data-view="profile" tabindex="0">
+        <svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4" fill="none" stroke="#0ff" stroke-width="1.8"/><path d="M4 21a8 8 0 0 1 16 0" fill="none" stroke="#0ff" stroke-width="1.8"/></svg>
+        Профиль
+      </div>
+      <div class="tab" data-view="shop" tabindex="0">
+        <svg viewBox="0 0 24 24"><path d="M3 7h18l-2 12H5L3 7Zm4-4h10l2 4H5l2-4Z" fill="none" stroke="#0ff" stroke-width="1.8"/></svg>
+        Магазин
+      </div>
+      <div class="tab" data-view="referrals" tabindex="0">
+        <svg viewBox="0 0 24 24"><path d="M8 12a4 4 0 1 1 0-8 4 4 0 0 1 0 8Zm8 0a4 4 0 1 1 0-8 4 4 0 0 1 0 8ZM3 21c0-3 3-5 5-5s5 2 5 5M11 21c0-3 3-5 5-5s5 2 5 5" fill="none" stroke="#0ff" stroke-width="1.8"/></svg>
+        Рефералы
+      </div>
+      <div class="tab" data-view="settings" tabindex="0">
+        <svg viewBox="0 0 24 24"><path d="M12 15a3 3 0 1 0 0-6 3 3 0 0 0 0 6Zm7.5-3a7.5 7.5 0 0 1-.1 1l2 1.5-2 3.5-2.3-.7a7.6 7.6 0 0 1-1.6 1l-.3 2.4H11l-.3-2.4a7.6 7.6 0 0 1-1.6-1l-2.3.7-2-3.5L6.8 13a7.5 7.5 0 0 1 0-2L3.8 9.5l2-3.5 2.3.7a7.6 7.6 0 0 1 1.6-1L10.7 3h2.6l.3 2.4a7.6 7.6 0 0 1 1.6 1l2.3-.7 2 3.5L19.4 11c.1.3.1.6.1 1Z" fill="none" stroke="#0ff" stroke-width="1.4"/></svg>
+        Настройки
+      </div>
+      <div class="tab" data-view="help" tabindex="0">
+        <svg viewBox="0 0 24 24"><path d="M12 19h.01M12 17a5 5 0 1 0-5-5" fill="none" stroke="#0ff" stroke-width="1.8"/></svg>
+        Помощь
+      </div>
+    </nav>
+    <div class="side-stat">
+      <div class="stat-chip glow-cyan" id="levelPill" tabindex="0" title="Прогресс уровня">🎓 Уровень: <b id="uiLevel">1</b></div>
+      <div class="xp-bar"><div class="xp-fill" id="uiXpFill"></div></div>
+      <div class="stat-chip">🪙 Монеты: <b id="uiCoins">0</b></div>
+      <div class="footer-mini">© EdQuest • v8</div>
+    </div>
+  </aside>
 
-<!-- Content -->
-<div class="content">
-  <div class="container" id="views">
-    <!-- HOME -->
-    <section class="panel" data-view="home">
-      <div class="hero">
-        <div>
-          <div class="title">Учись как в игре</div>
-          <p class="muted">Короткие задания по математике, русскому, физике. Стрики, уровни и XP — знакомая геймификация, но без шумного UI.</p>
+  <!-- Content -->
+  <div class="content" id="content">
+    <div class="container" id="views">
+      <!-- HOME -->
+      <section class="panel glow-cyan" data-view="home">
+        <div class="hero">
+          <div>
+            <h1 class="title text-glow">Тренируйся в кибер‑стиле</h1>
+            <p class="muted">Задания по математике, русскому и физике. Прозрачные панели, неоновые акценты, читаемость — на всех экранах от мобильных до 4K.</p>
+            <div class="grid" style="grid-template-columns: repeat(2, minmax(0,1fr)); max-width:560px">
+              <button class="btn primary" id="startBtn">▶️ Начать игру</button>
+              <button class="btn" data-jump="profile">👤 Мой профиль</button>
+            </div>
+            <div class="hud" style="margin-top:12px">
+              <span class="chip">💠 Чистый HUD</span>
+              <span class="chip">🧠 Адаптивная типографика</span>
+              <span class="chip">⚙️ Быстрые настройки</span>
+            </div>
+          </div>
+          <!-- HUD illustration (simple neon frame) -->
+          <svg viewBox="0 0 320 220" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+            <g fill="none" stroke="#0ff" stroke-opacity=".7">
+              <rect x="6" y="6" width="308" height="208" rx="10" stroke-width="1.5"/>
+              <rect x="26" y="26" width="120" height="60" rx="8" stroke-width="1.2"/>
+              <rect x="170" y="26" width="120" height="60" rx="8" stroke-width="1.2"/>
+              <rect x="26" y="106" width="264" height="88" rx="8" stroke-width="1.2"/>
+              <circle cx="280" cy="46" r="10"/>
+            </g>
+          </svg>
+        </div>
+      </section>
+
+      <!-- PATH -->
+      <section class="panel" data-view="home">
+        <div class="title">🧭 Твой путь</div>
+        <div class="grid" id="homePath"></div>
+      </section>
+
+      <!-- PLAY -->
+      <section class="play-wrap" data-view="play">
+        <div class="panel glow-cyan">
+          <div class="breadcrumbs">
+            <span class="linklike" data-jump="home">🏠 Главная</span> › <b>Игра</b>
+            <span class="chip" style="margin-left:auto">🧠 Практика</span>
+          </div>
+          <div style="height:10px"></div>
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px">
+            <h2 class="title">🎯 Раунд <span id="roundNum">1</span></h2>
+            <div class="chip" id="subjectPill">📚 Предмет: —</div>
+          </div>
+          <div id="questionArea"></div>
           <div style="display:flex; gap:8px; margin-top:12px; flex-wrap:wrap">
-            <button class="btn primary" id="startBtn">Начать игру</button>
-            <button class="btn" data-jump="profile">Мой прогресс</button>
+            <button class="btn" id="skipBtn">⏭️ Пропустить</button>
+            <button class="btn" id="finishBtn">🛑 Завершить сессию</button>
+            <button class="btn" id="nextBtn" disabled>➡️ Дальше</button>
           </div>
         </div>
-        <!-- unobtrusive educational illustration -->
-        <svg viewBox="0 0 300 220" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-          <defs><linearGradient id="g1" x1="0" x2="1" y1="0" y2="1">
-            <stop offset="0" stop-color="#58CC02" stop-opacity="0.9"/>
-            <stop offset="1" stop-color="#1CB0F6" stop-opacity="0.9"/>
-          </linearGradient></defs>
-          <rect x="10" y="20" width="280" height="160" rx="14" fill="url(#g1)" opacity="0.2"/>
-          <g fill="#fff" opacity="0.9">
-            <circle cx="60" cy="80" r="22" opacity="0.9"/>
-            <rect x="100" y="58" width="160" height="12" rx="6" opacity="0.7"/>
-            <rect x="100" y="78" width="120" height="10" rx="5" opacity="0.7"/>
-            <rect x="20" y="120" width="240" height="12" rx="6" opacity="0.7"/>
-            <rect x="20" y="140" width="200" height="10" rx="5" opacity="0.7"/>
-          </g>
-          <g fill="#fff">
-            <text x="20" y="200" font-size="14" fill="#cfe9ff">a^2 + b^2 = c^2</text>
-            <text x="200" y="200" font-size="14" fill="#cfe9ff">F = ma</text>
-          </g>
-        </svg>
-      </div>
-    </section>
-
-    <!-- PATH -->
-    <section class="panel" data-view="home">
-      <div class="title">Твой путь</div>
-      <div class="grid" id="homePath"></div>
-    </section>
-
-    <!-- PLAY: session at right (desktop) / top (mobile) -->
-    <section class="play-wrap" data-view="play">
-      <div class="panel">
-        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px">
-          <div class="title">Раунд <span id="roundNum">1</span></div>
-          <div class="pill" id="subjectPill">Предмет: —</div>
+        <div class="panel session-sticky">
+          <div class="title">📊 Сессия</div>
+          <div class="stat-row">
+            <div class="stat">🎯 Точность <b id="sessAcc">0%</b></div>
+            <div class="stat">🔥 Серия <b id="sessStreak">0</b></div>
+            <div class="stat">⏱ Время/задание <b id="sessTime">0.0с</b></div>
+            <div class="stat">✅ Решено <b id="sessSolved">0</b></div>
+          </div>
+          <div class="grid" style="margin-top:8px">
+            <canvas class="chart" id="chartAcc"></canvas>
+            <canvas class="chart" id="chartTime"></canvas>
+          </div>
         </div>
-        <div id="questionArea"></div>
-        <div style="display:flex; gap:8px; margin-top:8px; flex-wrap:wrap">
-          <button class="btn" id="skipBtn">Пропустить</button>
-          <button class="btn" id="finishBtn">Завершить сессию</button>
-          <button class="btn" id="nextBtn" disabled>Дальше</button>
+      </section>
+
+      <!-- PROFILE -->
+      <section class="panel" data-view="profile">
+        <div class="title">👤 Профиль</div>
+        <div class="grid cols-3">
+          <div class="panel">
+            <div class="title">📋 Общее</div>
+            <div class="grid">
+              <div class="stat">🎓 Уровень <b id="pfLevel">1</b></div>
+              <div class="stat">⭐ Опыт <b id="pfXp">0 / 100</b></div>
+              <div class="stat">🪙 Монеты <b id="pfCoins">0</b></div>
+              <div class="stat">🎯 Точность <b id="pfAcc">0%</b></div>
+              <div class="stat">🔥 Макс. серия <b id="pfMaxStreak">0</b></div>
+              <div class="stat">✅ Решено <b id="pfSolved">0</b></div>
+            </div>
+          </div>
+          <div class="panel">
+            <div class="title">🧪 По предметам</div>
+            <canvas class="chart" id="chartSubjects"></canvas>
+          </div>
+          <div class="panel">
+            <div class="title">🏆 Достижения</div>
+            <div class="grid" id="pfBadges"></div>
+          </div>
         </div>
-      </div>
-      <div class="panel">
-        <div class="title">Сессия</div>
+      </section>
+
+      <!-- SHOP -->
+      <section class="panel" data-view="shop">
+        <div class="title">🛍️ Магазин монет — стикерпаки</div>
+        <p class="muted">Обменивай монеты на наборы стикеров. После покупки набор отмечается как «Владение».</p>
+        <div class="shop-grid" id="shopGrid"></div>
+      </section>
+
+      <!-- REFERRALS -->
+      <section class="panel" data-view="referrals">
+        <div class="title">🤝 Реферальная система</div>
+        <p class="muted">Зови друзей — получай <b>+50 XP</b> и <b>+20 монет</b> за каждого.</p>
+        <p>Твой код: <span class="stat-chip" id="refCode">—</span></p>
+        <div style="display:flex; gap:8px; flex-wrap:wrap; margin:8px 0">
+          <button class="btn" id="copyCodeBtn">📋 Скопировать</button>
+          <button class="btn" id="simulateInviteBtn">➕ Симулировать приглашение</button>
+        </div>
         <div class="stat-row">
-          <div class="stat"><span class="pill">Точность</span><b id="sessAcc">0%</b></div>
-          <div class="stat"><span class="pill">Серия</span><b id="sessStreak">0</b></div>
-          <div class="stat"><span class="pill">Время/задание</span><b id="sessTime">0.0с</b></div>
-          <div class="stat"><span class="pill">Решено</span><b id="sessSolved">0</b></div>
+          <div class="stat">👥 Приглашено <b id="refCount">0</b></div>
+          <div class="stat">⭐ XP бонус <b id="refXp">0</b></div>
+          <div class="stat">🪙 Монеты <b id="refCoins">0</b></div>
         </div>
-        <div class="grid" style="margin-top:8px">
-          <canvas class="chart" id="chartAcc"></canvas>
-          <canvas class="chart" id="chartTime"></canvas>
+        <div style="height:8px"></div>
+        <div class="title">🔑 Есть код друга?</div>
+        <div style="display:flex; gap:8px; flex-wrap:wrap">
+          <input id="friendCode" class="answer-input" placeholder="Введи код друга — +10 монет">
+          <button class="btn" id="activateFriendCode">✅ Активировать</button>
         </div>
-      </div>
-    </section>
+        <p class="muted">* Демо хранит данные локально в твоём браузере.</p>
+      </section>
 
-    <!-- PROFILE -->
-    <section class="panel" data-view="profile">
-      <div class="title">Профиль</div>
-      <div class="grid cols-3">
-        <div class="panel">
-          <div class="title">Общее</div>
-          <div class="grid">
-            <div class="stat"><span class="pill">Уровень</span><b id="pfLevel">1</b></div>
-            <div class="stat"><span class="pill">Опыт</span><b id="pfXp">0 / 100</b></div>
-            <div class="stat"><span class="pill">Монеты</span><b id="pfCoins">0</b></div>
-            <div class="stat"><span class="pill">Точность</span><b id="pfAcc">0%</b></div>
-            <div class="stat"><span class="pill">Макс. серия</span><b id="pfMaxStreak">0</b></div>
-            <div class="stat"><span class="pill">Решено</span><b id="pfSolved">0</b></div>
+      <!-- SETTINGS -->
+      <section class="panel" data-view="settings">
+        <div class="title">⚙️ Настройки</div>
+        <div class="grid cols-2">
+          <div class="panel">
+            <div class="title">🎚️ Масштаб UI</div>
+            <div style="display:flex; gap:8px; flex-wrap:wrap">
+              <button class="btn" data-scale="0.9">90%</button>
+              <button class="btn" data-scale="1.0">100%</button>
+              <button class="btn" data-scale="1.1">110%</button>
+              <button class="btn" data-scale="1.2">120%</button>
+            </div>
+          </div>
+          <div class="panel">
+            <div class="title">🔔 Уведомления</div>
+            <button class="btn" id="testToast">Показать тост</button>
           </div>
         </div>
-        <div class="panel">
-          <div class="title">По предметам</div>
-          <canvas class="chart" id="chartSubjects"></canvas>
-        </div>
-        <div class="panel">
-          <div class="title">Достижения</div>
-          <div class="grid" id="pfBadges"></div>
-        </div>
-      </div>
-    </section>
+      </section>
 
-    <!-- SHOP -->
-    <section class="panel" data-view="shop">
-      <div class="title">Магазин монет — стикерпаки</div>
-      <p class="muted">Обменивай монеты на наборы стикеров как в Telegram. После покупки набор отмечается как «Владение».</p>
-      <div class="shop-grid" id="shopGrid"></div>
-    </section>
-
-    <!-- REFERRALS -->
-    <section class="panel" data-view="referrals">
-      <div class="title">Реферальная система</div>
-      <p class="muted">Зови друзей — получай <b>+50 XP</b> и <b>+20 монет</b> за каждого.</p>
-      <p>Твой код: <span class="pill" id="refCode">—</span></p>
-      <div style="display:flex; gap:8px; flex-wrap:wrap; margin:8px 0">
-        <button class="btn" id="copyCodeBtn">Скопировать</button>
-        <button class="btn" id="simulateInviteBtn">Симулировать приглашение</button>
-      </div>
-      <div class="stat-row">
-        <div class="stat"><span class="pill">Приглашено</span><b id="refCount">0</b></div>
-        <div class="stat"><span class="pill">XP бонус</span><b id="refXp">0</b></div>
-        <div class="stat"><span class="pill">Монеты</span><b id="refCoins">0</b></div>
-      </div>
-      <div style="height:8px"></div>
-      <div class="title">Есть код друга?</div>
-      <div style="display:flex; gap:8px; flex-wrap:wrap">
-        <input id="friendCode" class="answer-input" placeholder="Введи код друга — +10 монет">
-        <button class="btn" id="activateFriendCode">Активировать</button>
-      </div>
-      <p class="muted">* Демо хранит данные локально в твоём браузере.</p>
-    </section>
-
+      <!-- HELP -->
+      <section class="panel" data-view="help">
+        <div class="title">❓ Помощь</div>
+        <p class="muted">Шорткаты: <span class="kbd">G</span> — главная, <span class="kbd">I</span> — игра, <span class="kbd">P</span> — профиль, <span class="kbd">S</span> — магазин, <span class="kbd">R</span> — рефералы.</p>
+        <p class="muted">Всегда можно вернуться на главную кликом по логотипу слева.</p>
+      </section>
+    </div>
   </div>
 </div>
 
-<!-- Level Modal -->
-<div class="modal" id="levelModal">
+<!-- Mobile bottom nav -->
+<footer class="mb" aria-label="Нижняя навигация (мобильная)">
+  <div class="row">
+    <div class="tab active" data-view="home">🏠<br>Главная</div>
+    <div class="tab" data-view="play">🎮<br>Игра</div>
+    <div class="tab" data-view="profile">👤<br>Профиль</div>
+    <div class="tab" data-view="shop">🛍️<br>Магазин</div>
+    <div class="tab" data-view="referrals">🤝<br>Рефералы</div>
+  </div>
+</footer>
+
+<!-- Modals -->
+<div class="modal" id="levelModal" aria-modal="true" role="dialog">
   <div class="card">
-    <div class="title">Твой уровень и награды</div>
-    <p class="muted">За повышение уровня выдаются монеты и стикеры. Выполняй задания, держи серию — и растёшь быстрее.</p>
+    <div class="title">🎓 Твой уровень и награды</div>
     <div class="grid">
       <div class="stat-row">
-        <div class="stat"><span class="pill">Уровень</span><b id="lvNow">1</b></div>
-        <div class="stat"><span class="pill">Прогресс</span><b id="lvXp">0 / 100</b></div>
+        <div class="stat">Уровень <b id="lvNow">1</b></div>
+        <div class="stat">Прогресс <b id="lvXp">0 / 100</b></div>
       </div>
       <canvas class="chart" id="chartLevels"></canvas>
     </div>
@@ -259,32 +388,31 @@
   </div>
 </div>
 
-<!-- Post-Session Summary Modal -->
-<div class="modal" id="summaryModal">
+<div class="modal" id="summaryModal" aria-modal="true" role="dialog">
   <div class="card">
-    <div class="title">Сессия завершена</div>
+    <div class="title">✅ Сессия завершена</div>
     <div class="grid">
       <div class="stat-row">
-        <div class="stat"><span class="pill">Решено</span><b id="sumSolved">0</b></div>
-        <div class="stat"><span class="pill">Точность</span><b id="sumAcc">0%</b></div>
-        <div class="stat"><span class="pill">Серия макс</span><b id="sumStreak">0</b></div>
-        <div class="stat"><span class="pill">XP за сессию</span><b id="sumXp">0</b></div>
+        <div class="stat">Решено <b id="sumSolved">0</b></div>
+        <div class="stat">Точность <b id="sumAcc">0%</b></div>
+        <div class="stat">Серия макс <b id="sumStreak">0</b></div>
+        <div class="stat">XP за сессию <b id="sumXp">0</b></div>
       </div>
       <canvas class="chart" id="sumSubjects"></canvas>
       <canvas class="chart" id="sumTime"></canvas>
       <div style="display:flex; gap:8px; justify-content:flex-end">
-        <button class="btn" id="sumToHome">На главную</button>
-        <button class="btn primary" id="sumRestart">Новая сессия</button>
+        <button class="btn" id="sumToHome">🏠 На главную</button>
+        <button class="btn" id="sumRestart">🔁 Новая сессия</button>
       </div>
     </div>
   </div>
 </div>
 
-<div class="toast" id="toast"></div>
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
 
 <script>
-/* ===== Save/State ===== */
-const DB_KEY = 'edquest.save.v5';
+/* ===== State ===== */
+const DB_KEY = 'edquest.save.v8';
 const Save = { load(){ try{return JSON.parse(localStorage.getItem(DB_KEY))||null}catch(e){return null} },
                save(s){ localStorage.setItem(DB_KEY, JSON.stringify(s)) } };
 const initState = ()=>({
@@ -293,13 +421,14 @@ const initState = ()=>({
   subjects:{ math:{correct:0,total:0}, russian:{correct:0,total:0}, physics:{correct:0,total:0} },
   badges:[],
   referrals:{ code: genCode(), count:0, xp:0, coins:0, usedCodes:[] },
-  shop:{ owned:[] }
+  shop:{ owned:[] },
+  ui:{ scale: 1.0 }
 });
 let state = Save.load() || initState();
 function genCode(){ return Math.random().toString(36).slice(2,7).toUpperCase(); }
 function toast(msg){ const t=document.getElementById('toast'); t.textContent=msg; t.style.display='block'; clearTimeout(toast._t); toast._t=setTimeout(()=>t.style.display='none', 2200); }
 
-/* ===== Navigation ===== */
+/* ===== Nav ===== */
 function setActive(view){
   document.querySelectorAll('.tab').forEach(t=>t.classList.toggle('active', t.dataset.view===view));
   document.querySelectorAll('[data-view]').forEach(s=> s.style.display = (s.dataset.view===view?'block':'none'));
@@ -307,15 +436,38 @@ function setActive(view){
   if(view==='referrals') renderReferrals();
   if(view==='home') { renderHome(); buildPath(); }
   if(view==='shop') renderShop();
+  if(view==='play'){ refreshCharts(); }
+  document.getElementById('content').scrollTo({top:0, behavior:'smooth'});
 }
-document.getElementById('logo').addEventListener('click', ()=> setActive('home')); // logo -> home
-document.querySelectorAll('.tab').forEach(t=> t.addEventListener('click', ()=> setActive(t.dataset.view)));
+document.getElementById('logo').addEventListener('click', ()=> setActive('home'));
+document.querySelectorAll('.tab').forEach(t=>{
+  t.addEventListener('click', ()=> setActive(t.dataset.view));
+  t.addEventListener('keydown', (e)=>{ if(e.key==='Enter' || e.key===' ') { e.preventDefault(); setActive(t.dataset.view); } });
+});
 document.querySelectorAll('[data-jump]').forEach(b=> b.addEventListener('click', ()=> setActive(b.dataset.jump)));
 setActive('home');
 
-/* ===== Level modal ===== */
+/* Shortcuts */
+window.addEventListener('keydown', (e)=>{
+  if(e.target.matches('input, textarea')) return;
+  const k=e.key.toLowerCase();
+  if(k==='g') setActive('home');
+  if(k==='i') setActive('play');
+  if(k==='p') setActive('profile');
+  if(k==='s') setActive('shop');
+  if(k==='r') setActive('referrals');
+});
+
+/* UI scale */
+document.querySelectorAll('[data-scale]').forEach(b=> b.addEventListener('click', ()=>{
+  const s=parseFloat(b.dataset.scale||'1'); state.ui.scale=s; document.documentElement.style.fontSize=(16*s)+'px'; Save.save(state);
+}));
+document.documentElement.style.fontSize=(16*(state.ui.scale||1))+'px';
+
+/* Level modal */
 const levelModal = document.getElementById('levelModal');
-document.getElementById('levelPill').addEventListener('click', ()=>{ openLevelModal(); });
+document.getElementById('levelPill').addEventListener('click', ()=> openLevelModal());
+document.getElementById('levelPill').addEventListener('keydown', (e)=>{ if(e.key==='Enter'||e.key===' ') openLevelModal(); });
 document.getElementById('closeLevelModal').addEventListener('click', ()=> levelModal.style.display='none');
 levelModal.addEventListener('click', (e)=>{ if(e.target===levelModal) levelModal.style.display='none' });
 function openLevelModal(){
@@ -326,24 +478,27 @@ function openLevelModal(){
   drawLine('chartLevels', state.profile.xpHist.slice(-20).map(v=>v.pct), 'Прогресс уровней %');
 }
 
-/* ===== Home path ===== */
+/* Home path */
 function buildPath(){
-  const root = document.getElementById('homePath'); root.innerHTML = '';
-  const subjects = [{id:'math', name:'Математика', icon:'➗'},{id:'russian', name:'Русский', icon:'🇷🇺'},{id:'physics', name:'Физика', icon:'⚛️'}];
-  const totalShown = 9;
-  for(let i=0;i<totalShown;i++){
-    const s = subjects[i%subjects.length];
-    const div = document.createElement('div'); div.className='panel';
-    div.innerHTML = `<div style="display:flex; align-items:center; gap:12px;">
-      <div class="pill">${s.icon}</div>
-      <div style="flex:1"><div style="font-weight:900">${s.name} — Урок ${i+1}</div><div class="muted">Награда: ${8+i%4} XP</div></div>
-      <button class="btn">Пройти</button></div>`;
-    div.querySelector('.btn').addEventListener('click', ()=> setActive('play'));
-    root.appendChild(div);
+  const root = document.getElementById('homePath'); root.innerHTML='';
+  const subjects = [{id:'math',name:'Математика',icon:'📐'},{id:'russian',name:'Русский',icon:'🔤'},{id:'physics',name:'Физика',icon:'🧲'}];
+  for(let i=1;i<=9;i++){
+    const s=subjects[(i-1)%subjects.length];
+    const card=document.createElement('div'); card.className='panel'; card.innerHTML=`
+      <div style="display:flex; align-items:center; gap:12px">
+        <div class="chip">${s.icon}</div>
+        <div style="flex:1">
+          <div style="font-weight:900">${s.name} — Урок ${i}</div>
+          <div class="muted">Награда: ${8+i%4} XP</div>
+        </div>
+        <button class="btn">▶️ Начать</button>
+      </div>`;
+    card.querySelector('.btn').addEventListener('click', ()=> setActive('play'));
+    root.appendChild(card);
   }
 }
 
-/* ===== Questions: 30 per subject ===== */
+/* Questions (30 per subject) */
 const QUESTIONS = buildQuestions();
 function buildQuestions(){
   const arr=[];
@@ -368,10 +523,9 @@ function buildQuestions(){
   for(let i=1;i<=30;i++){ pushMath(i); pushRussian(i); pushPhysics(i); }
   return arr;
 }
-let deck = [];
-const buildDeck = ()=> deck = QUESTIONS.slice().sort(()=>Math.random()-.5);
+let deck = []; const buildDeck = ()=> deck = QUESTIONS.slice().sort(()=>Math.random()-.5);
 
-/* ===== Topbar replacement (in sidebar) ===== */
+/* Sidebar stats */
 function updateSidebarStats(){
   document.getElementById('uiLevel').textContent = state.profile.level;
   document.getElementById('uiCoins').textContent = state.profile.coins;
@@ -386,7 +540,7 @@ function addXP(n){
   while(state.profile.xp >= (100 + (state.profile.level-1)*50)){
     state.profile.xp -= (100 + (state.profile.level-1)*50);
     state.profile.level++; up=true; state.profile.xpHist.push({ts:Date.now(), pct:100});
-    addCoins(20); toast('Новый уровень! +20 монет');
+    addCoins(20); toast('Новый уровень! +20 монет 🎉');
   }
   const need = 100 + (state.profile.level-1)*50;
   state.profile.xpHist.push({ts:Date.now(), pct: Math.round(state.profile.xp/need*100)});
@@ -394,12 +548,13 @@ function addXP(n){
 }
 function addCoins(n){ state.profile.coins += n; updateSidebarStats(); Save.save(state); }
 
-/* ===== Game flow ===== */
+/* Game flow */
 const qArea = document.getElementById('questionArea');
 let qStart = 0;
 document.getElementById('skipBtn').addEventListener('click', nextQuestion);
 document.getElementById('nextBtn').addEventListener('click', nextQuestion);
 document.getElementById('startBtn').addEventListener('click', ()=>{ setActive('play'); if(state.session.total===0) startSession(); });
+document.querySelectorAll('.breadcrumbs .linklike').forEach(el=> el.addEventListener('click', ()=> setActive('home')));
 document.getElementById('finishBtn').addEventListener('click', finishSession);
 
 function startSession(){ state.session = { round:0, correct:0, total:0, streak:0, times:[], accHist:[], xpGain:0, subjects:{math:0,russian:0,physics:0} }; buildDeck(); nextQuestion(); }
@@ -411,7 +566,7 @@ function nextQuestion(){
 function renderQuestion(q){
   qStart = performance.now();
   document.getElementById('roundNum').textContent = state.session.round;
-  document.getElementById('subjectPill').textContent = 'Предмет: ' + ({math:'Математика',russian:'Русский',physics:'Физика'}[q.subject]);
+  document.getElementById('subjectPill').textContent = '📚 Предмет: ' + ({math:'Математика',russian:'Русский',physics:'Физика'}[q.subject]);
   qArea.innerHTML = '';
   const title = document.createElement('div'); title.className='q-title'; title.textContent=q.text; qArea.appendChild(title);
   if(q.type==='mcq'){
@@ -428,7 +583,7 @@ function renderQuestion(q){
     b.addEventListener('click', ()=>{
       const val = (input.value||'').trim().toLowerCase().replace(',', '.').replace(' ', '');
       const ok = String(q.answer).toLowerCase() === val;
-      checkAnswer(q, ok, input, ()=> input.style.outline='2px solid '+(ok?'var(--ok)':'var(--bad)'));
+      checkAnswer(q, ok, input, ()=> input.style.boxShadow='0 0 12px '+(ok?'rgba(0,255,170,.35)':'rgba(255,80,120,.35)'));
     });
     input.addEventListener('keydown', e=>{ if(e.key==='Enter') b.click(); });
     qArea.appendChild(input); qArea.appendChild(b);
@@ -450,7 +605,7 @@ function renderQuestion(q){
     b.addEventListener('click', ()=>{
       const arr = Array.from(list.children).map(li=>li.textContent);
       const ok = JSON.stringify(arr)===JSON.stringify(q.answer);
-      checkAnswer(q, ok, list, ()=> list.style.outline='2px solid '+(ok?'var(--ok)':'var(--bad)'));
+      checkAnswer(q, ok, list, ()=> list.style.boxShadow='0 0 12px '+(ok?'rgba(0,255,170,.35)':'rgba(255,80,120,.35)'));
     });
     qArea.appendChild(list); qArea.appendChild(b);
   }
@@ -496,7 +651,7 @@ document.getElementById('sumToHome').addEventListener('click', ()=>{ document.ge
 document.getElementById('sumRestart').addEventListener('click', ()=>{ document.getElementById('summaryModal').style.display='none'; startSession(); });
 document.getElementById('summaryModal').addEventListener('click', (e)=>{ if(e.target.id==='summaryModal') e.currentTarget.style.display='none'; });
 
-/* ===== Profile ===== */
+/* Profile */
 function renderProfile(){
   document.getElementById('pfLevel').textContent = state.profile.level;
   const need = 100 + (state.profile.level-1)*50;
@@ -512,7 +667,12 @@ function renderProfile(){
 function pct(x){ return x.total? Math.round(x.correct/x.total*100):0; }
 function renderBadges(id){
   const root = document.getElementById(id); if(!root) return; root.innerHTML='';
-  if(state.badges.length===0) { root.innerHTML = '<div class="muted">Пока нет достижений — решай задачи!</div>'; return; }
+  if(state.badges.length===0) {
+    const empty = document.createElement('div');
+    empty.className='muted'; empty.textContent='Пока нет достижений — решай задачи!';
+    root.appendChild(empty);
+    return;
+  }
   for(const b of state.badges){
     const card = document.createElement('div'); card.className='panel'; card.style.textAlign='center';
     card.innerHTML = '<div style="font-size:28px">'+b.icon+'</div><div style="font-weight:900">'+b.name+'</div><div class="muted">'+b.desc+'</div>';
@@ -520,51 +680,57 @@ function renderBadges(id){
   }
 }
 
-/* ===== Charts ===== */
+/* Charts */
 function drawLine(id, arr, label){
-  const c = document.getElementById(id); const ctx = c.getContext('2d');
+  const c = document.getElementById(id); if(!c) return; const ctx = c.getContext('2d');
   c.width = c.clientWidth * devicePixelRatio; c.height = c.clientHeight * devicePixelRatio;
   ctx.clearRect(0,0,c.width,c.height);
-  ctx.fillStyle='#9db3cf'; ctx.globalAlpha=.8; ctx.font=(12*devicePixelRatio)+'px system-ui'; ctx.fillText(label, 8*devicePixelRatio, 14*devicePixelRatio); ctx.globalAlpha=1;
+  ctx.fillStyle='#9ad0df'; ctx.globalAlpha=.9; ctx.font=(12*devicePixelRatio)+'px system-ui'; ctx.fillText(label, 8*devicePixelRatio, 14*devicePixelRatio); ctx.globalAlpha=1;
   if(arr.length<2) return;
   const max=Math.max(...arr, 100), min=Math.min(...arr, 0);
   const pad=10*devicePixelRatio, w=c.width-pad*2, h=c.height-pad*2;
   ctx.beginPath();
   arr.forEach((v,i)=>{ const x=pad + i/(arr.length-1)*w; const y=pad + (1-(v-min)/(max-min))*h; if(i===0) ctx.moveTo(x,y); else ctx.lineTo(x,y); });
-  ctx.strokeStyle= '#1CB0F6'; ctx.lineWidth= 2*devicePixelRatio; ctx.stroke();
+  ctx.strokeStyle= '#00F0FF'; ctx.lineWidth= 2*devicePixelRatio; ctx.stroke();
 }
 function drawBars(id, pairs){
-  const c = document.getElementById(id); const ctx = c.getContext('2d');
+  const c = document.getElementById(id); if(!c) return; const ctx = c.getContext('2d');
   c.width = c.clientWidth * devicePixelRatio; c.height = c.clientHeight * devicePixelRatio;
   ctx.clearRect(0,0,c.width,c.height);
   const pad=16*devicePixelRatio, bw=(c.width-pad*2)/(pairs.length*1.6);
   const maxVal = Math.max(1, ...pairs.map(p=>p[1]));
   pairs.forEach((p,i)=>{
     const x = pad + i*bw*1.6; const h=(c.height-pad*2)*(p[1]/maxVal);
-    ctx.fillStyle = '#58CC02'; ctx.fillRect(x, c.height-pad-h, bw, h);
-    ctx.fillStyle = '#9db3cf'; ctx.font=(12*devicePixelRatio)+'px system-ui'; ctx.fillText(p[0], x, c.height-4*devicePixelRatio);
+    ctx.fillStyle = '#9CF000'; ctx.fillRect(x, c.height-pad-h, bw, h);
+    ctx.fillStyle = '#9ad0df'; ctx.font=(12*devicePixelRatio)+'px system-ui'; ctx.fillText(p[0], x, c.height-4*devicePixelRatio);
   });
 }
-new ResizeObserver(()=>{ renderSession(); if(document.querySelector('[data-view="profile"]').style.display==='block') renderProfile(); }).observe(document.getElementById('views'));
+function refreshCharts(){
+  if(document.querySelector('[data-view="play"]').style.display==='block'){ renderSession(); }
+  if(document.querySelector('[data-view="profile"]').style.display==='block'){ renderProfile(); }
+}
+new ResizeObserver(refreshCharts).observe(document.getElementById('views'));
 
-/* ===== Shop ===== */
+/* Shop */
 const STICKERS = [
   {id:'s1', name:'Учёба — Базовый', icon:'📘', price:80},
   {id:'s2', name:'Математика — Мемы', icon:'➗😄', price:120},
-  {id:'s3', name:'Русский — Смайлы', icon:'🇷🇺✨', price:100},
+  {id:'s3', name:'Русский — Смайлы', icon:'📝✨', price:100},
   {id:'s4', name:'Физика — Космос', icon:'⚛️🚀', price:150},
   {id:'s5', name:'ЕГЭ — Легендарный', icon:'🎓🔥', price:300},
   {id:'s6', name:'Фан — Котики', icon:'🐱', price:90},
+  {id:'s7', name:'Математика — Гео', icon:'📐', price:110},
+  {id:'s8', name:'Русский — Орфо', icon:'🔤', price:95},
 ];
 function renderShop(){
   const root = document.getElementById('shopGrid'); root.innerHTML='';
   for(const s of STICKERS){
     const owned = state.shop.owned.includes(s.id);
-    const div = document.createElement('div'); div.className='sticker';
-    div.innerHTML = `<div class="img">${s.icon}</div>
+    const div = document.createElement('div'); div.className='sticker glow-cyan';
+    div.innerHTML = `<div class="img"><span style="font-size:46px">${s.icon}</span></div>
       <div style="font-weight:900">${s.name}</div>
       <div class="price">Цена: ${s.price} 🪙</div>
-      <button class="btn ${owned?'':'primary'}" ${owned?'disabled':''}>${owned?'Владение':'Купить'}</button>`;
+      <button class="btn ${owned?'':'primary'}" ${owned?'disabled':''}>${owned?'✅ Владение':'Купить'}</button>`;
     div.querySelector('button').addEventListener('click', ()=>{
       if(owned) return;
       if(state.profile.coins < s.price){ toast('Не хватает монет'); return; }
@@ -574,7 +740,7 @@ function renderShop(){
   }
 }
 
-/* ===== Referrals ===== */
+/* Referrals */
 function renderReferrals(){
   document.getElementById('refCode').textContent = state.referrals.code;
   document.getElementById('refCount').textContent = state.referrals.count;
@@ -592,9 +758,12 @@ document.getElementById('activateFriendCode')?.addEventListener('click', ()=>{
   state.referrals.usedCodes.push(code); addCoins(10); Save.save(state); toast('Код активирован! +10 монет');
 });
 
-/* ===== Init ===== */
+/* Settings */
+document.getElementById('testToast').addEventListener('click', ()=> toast('Это уведомление 😎'));
+
+/* Init */
 renderHome(); buildPath(); renderShop(); updateSidebarStats(); setActive('home');
-function renderHome(){ /* could load personalized data later */ }
+function renderHome(){ /* personalize later */ }
 </script>
 </body>
 </html>
