@@ -1,0 +1,651 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>EdQuest — подготовка к ЕГЭ (v4)</title>
+<style>
+  :root{
+    --fs-12: clamp(12px, 0.78rem + 0.1vw, 14px);
+    --fs-14: clamp(14px, 0.85rem + 0.2vw, 16px);
+    --fs-16: clamp(16px, 0.9rem + 0.3vw, 18px);
+    --fs-18: clamp(18px, 1rem + 0.45vw, 22px);
+    --fs-22: clamp(22px, 1.05rem + 0.8vw, 28px);
+    --fs-28: clamp(24px, 1.2rem + 1.2vw, 32px);
+    --radius: 12px;
+    --space-8: 8px; --space-12: 12px; --space-16: 16px;
+    --space-20: 20px; --space-24: 24px; --space-32: 32px;
+    --elev-1: 0 6px 16px rgba(0,0,0,.18);
+    --elev-2: 0 12px 32px rgba(0,0,0,.25);
+    --bg: #0b1117; --panel:#0f1722; --panel-2:#101b2b;
+    --text:#f3f7ff; --muted:#9db3cf;
+    --green:#58CC02; --blue:#1CB0F6; --gold:#FFC715;
+    --ok:#00d27a; --bad:#ff6b6b;
+    --content-max: min(1200px, 100%);
+  }
+  *{box-sizing:border-box}
+  html, body{height:100%}
+  body{ margin:0; font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial;
+        background: radial-gradient(1200px 800px at 10% -10%, rgba(28,176,246,.08), rgba(0,0,0,0) 40%), #0b1117;
+        color: var(--text); -webkit-font-smoothing: antialiased; }
+  /* --- Static top menu for ALL screens --- */
+  header.appbar{
+    position: sticky; top:0; z-index:5;
+    background: rgba(15,23,34,.92); backdrop-filter: blur(8px);
+    border-bottom: 1px solid rgba(255,255,255,.08);
+  }
+  .appbar .row{ display:flex; align-items:center; gap:12px; padding:10px 16px; max-width: var(--content-max); margin:0 auto; }
+  .brand{ display:flex; align-items:center; gap:10px; font-weight:900; font-size: var(--fs-16); cursor:pointer }
+  .logo{ width:28px; height:28px; border-radius:8px; background: conic-gradient(from 0deg, var(--green), var(--blue), var(--gold), var(--green)); box-shadow: inset 0 0 20px rgba(255,255,255,.18); }
+  nav.tabs{ display:flex; gap:8px; margin-left: 12px; flex-wrap: wrap }
+  .tab{ padding:8px 12px; border-radius:12px; font-weight:900; color: var(--muted); cursor:pointer; white-space:nowrap }
+  .tab.active{ color:var(--text); background: rgba(255,255,255,.08) }
+  .spacer{ flex:1 }
+  .xp-wrap{ display:flex; align-items:center; gap:10px }
+  .pill{ background: rgba(255,255,255,.08); padding: 6px 10px; border-radius:999px; font-weight:900; font-size: var(--fs-12); cursor:pointer }
+  .xp-bar{ width: 160px; height: 10px; background: rgba(255,255,255,.12); border-radius: 999px; overflow: hidden }
+  .xp-fill{ height: 100%; width: 0%; background: linear-gradient(90deg, var(--green), var(--blue)); }
+  .home-link{ padding:6px 10px; border-radius:10px; border:1px solid rgba(255,255,255,.12); cursor:pointer; font-weight:900 }
+  .home-link:hover{ background: rgba(255,255,255,.06) }
+
+  main{ padding: 16px; }
+  .container{ max-width: var(--content-max); margin: 0 auto; display:grid; gap: var(--space-16); }
+  .panel{ background: var(--panel); border:1px solid rgba(255,255,255,.06); border-radius: var(--radius); padding:16px; box-shadow: var(--elev-1) }
+  .title{ font-size: var(--fs-22); font-weight:900; margin-bottom:6px }
+  .muted{ color: var(--muted) }
+  .btn{ appearance:none; border:1px solid rgba(255,255,255,.14); border-radius:12px; padding:12px 14px; background: linear-gradient(180deg,#1b2740,#0f1a2b); color:var(--text); font-weight:900; cursor:pointer }
+  .btn.primary{ background: linear-gradient(180deg,#1f3f26,#0f2a14); border-color: rgba(88,204,2,.6) }
+  .btn:active{ transform: translateY(1px) }
+  .btn.block{ width:100% }
+
+  /* Hero with illustration */
+  .hero{ position:relative; min-height: 220px; display:grid; align-items:center; overflow:hidden; }
+  .hero-content{ position:relative; display:grid; gap: 10px; grid-template-columns: 1fr 320px; align-items:center }
+  @media (max-width: 900px){ .hero-content{ grid-template-columns: 1fr } }
+  .hero h1{ font-size: var(--fs-28); margin: 0 0 4px; }
+  .hero p{ font-size: var(--fs-16); margin:0; }
+  .hero svg{ width:100%; height:auto; opacity:.85; filter: drop-shadow(0 6px 20px rgba(0,0,0,.35)); }
+
+  .grid{ display:grid; gap:12px }
+  .cols-2{ grid-template-columns: repeat(2, minmax(0,1fr)) }
+  .cols-3{ grid-template-columns: repeat(3, minmax(0,1fr)) }
+  @media (max-width: 1100px){ .cols-2,.cols-3{ grid-template-columns: 1fr } }
+
+  /* Question UI with improved paddings */
+  .q-title{ font-size: var(--fs-18); font-weight:900; margin-bottom: 10px }
+  .choice{ padding: 14px; border-radius: 12px; border:1px solid rgba(255,255,255,.12); background: linear-gradient(180deg,#121d2d,#0e1725); font-weight:800; cursor:pointer }
+  .choice.correct{ outline:2px solid var(--ok) } .choice.wrong{ outline:2px solid var(--bad) }
+  .answer-input{ width:100%; padding:14px 16px; border-radius:12px; background:#0f1a2b; border:1px solid rgba(255,255,255,.16); color:var(--text); font-size: var(--fs-16) }
+  .order-list{ list-style:none; margin:0; padding:0; display:grid; gap:10px }
+  .order-item{ padding:14px; border-radius:12px; background:#0f1a2b; border:1px solid rgba(255,255,255,.16); cursor:grab }
+  .order-item.dragging{ opacity:.6 }
+
+  .stat-row{ display:flex; gap:12px; flex-wrap:wrap }
+  .stat{ display:flex; align-items:center; gap:10px; background: rgba(255,255,255,.06); border-radius:12px; padding:8px 12px }
+  .stat b{ font-size: var(--fs-18) }
+  canvas.chart{ width:100%; height: 180px }
+
+  /* Shop */
+  .shop-grid{ display:grid; gap:12px; grid-template-columns: repeat(3, minmax(0,1fr)); }
+  @media (max-width: 900px){ .shop-grid{ grid-template-columns: 1fr 1fr } }
+  @media (max-width: 560px){ .shop-grid{ grid-template-columns: 1fr } }
+  .sticker{ background: var(--panel-2); border:1px solid rgba(255,255,255,.08); border-radius:12px; padding:12px; display:grid; gap:8px; text-align:center }
+  .sticker .img{ font-size:40px; }
+  .price{ font-weight:900; color: var(--gold) }
+
+  /* Toast centered */
+  .toast{ position: fixed; left:50%; bottom: 80px; transform: translateX(-50%);
+          background: rgba(10,16,24,.95); border:1px solid rgba(255,255,255,.12); padding: 12px 14px; border-radius: 10px; display:none; z-index:10 }
+
+  /* Level modal */
+  .modal{ position: fixed; inset:0; background: rgba(0,0,0,.5); display:none; align-items:center; justify-content:center; z-index:20 }
+  .modal .card{ width:min(520px, 92vw); background: var(--panel); border:1px solid rgba(255,255,255,.12); border-radius:14px; padding:16px; box-shadow: var(--elev-2) }
+
+  /* Post-session summary */
+  .summary{ display:grid; gap:12px }
+  .summary .row{ display:grid; gap:12px; grid-template-columns: 1fr 1fr }
+  @media (max-width: 900px){ .summary .row{ grid-template-columns: 1fr } }
+</style>
+</head>
+<body>
+<header class="appbar">
+  <div class="row">
+    <div class="brand" id="logo"><div class="logo"></div> EdQuest</div>
+    <nav class="tabs" id="tabs">
+      <div class="tab active" data-view="home">Главная</div>
+      <div class="tab" data-view="play">Игра</div>
+      <div class="tab" data-view="profile">Профиль</div>
+      <div class="tab" data-view="shop">Магазин</div>
+      <div class="tab" data-view="referrals">Рефералы</div>
+    </nav>
+    <div class="spacer"></div>
+    <div class="home-link" id="goHome">↩ Вернуться на главную</div>
+    <div class="xp-wrap">
+      <div class="pill" id="levelPill">Ур. <span id="uiLevel">1</span></div>
+      <div class="xp-bar"><div class="xp-fill" id="uiXpFill"></div></div>
+      <div class="pill">🪙 <span id="uiCoins">0</span></div>
+    </div>
+  </div>
+</header>
+
+<main>
+  <div class="container" id="views">
+    <!-- HOME -->
+    <section class="panel" data-view="home">
+      <div class="hero">
+        <div class="hero-content">
+          <div>
+            <h1>Учись как в игре</h1>
+            <p class="muted">Короткие задания по математике, русскому, физике. Стрики, уровни и XP — как в лучших обучающих приложениях.</p>
+            <div style="display:flex; gap:8px; margin-top:12px; flex-wrap:wrap">
+              <button class="btn primary" id="startBtn">Начать игру</button>
+              <button class="btn" data-jump="profile">Мой прогресс</button>
+            </div>
+          </div>
+          <!-- unobtrusive educational illustration (inline SVG) -->
+          <svg viewBox="0 0 300 220" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+            <defs>
+              <linearGradient id="g1" x1="0" x2="1" y1="0" y2="1">
+                <stop offset="0" stop-color="#58CC02" stop-opacity="0.9"/>
+                <stop offset="1" stop-color="#1CB0F6" stop-opacity="0.9"/>
+              </linearGradient>
+            </defs>
+            <rect x="10" y="20" width="280" height="160" rx="14" fill="url(#g1)" opacity="0.2"/>
+            <g fill="#fff" opacity="0.9">
+              <circle cx="60" cy="80" r="22" opacity="0.9"/>
+              <rect x="100" y="58" width="160" height="12" rx="6" opacity="0.7"/>
+              <rect x="100" y="78" width="120" height="10" rx="5" opacity="0.7"/>
+              <rect x="20" y="120" width="240" height="12" rx="6" opacity="0.7"/>
+              <rect x="20" y="140" width="200" height="10" rx="5" opacity="0.7"/>
+            </g>
+            <g fill="#fff">
+              <text x="20" y="200" font-size="14" fill="#cfe9ff">a^2 + b^2 = c^2</text>
+              <text x="200" y="200" font-size="14" fill="#cfe9ff">F = ma</text>
+            </g>
+          </svg>
+        </div>
+      </div>
+    </section>
+
+    <!-- PATH -->
+    <section class="panel" data-view="home">
+      <div class="title">Твой путь</div>
+      <div class="grid" id="homePath"></div>
+    </section>
+
+    <!-- PLAY -->
+    <section class="panel" data-view="play">
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px">
+        <div class="title">Раунд <span id="roundNum">1</span></div>
+        <div class="pill" id="subjectPill">Предмет: —</div>
+      </div>
+      <div id="questionArea"></div>
+      <div style="display:flex; gap:8px; margin-top:8px; flex-wrap:wrap">
+        <button class="btn" id="skipBtn">Пропустить</button>
+        <button class="btn" id="finishBtn">Завершить сессию</button>
+        <button class="btn" id="nextBtn" disabled>Дальше</button>
+      </div>
+    </section>
+
+    <!-- SESSION PANEL (improved) -->
+    <section class="panel" data-view="play">
+      <div class="title">Сессия</div>
+      <div class="stat-row">
+        <div class="stat"><span class="pill">Точность</span><b id="sessAcc">0%</b></div>
+        <div class="stat"><span class="pill">Серия</span><b id="sessStreak">0</b></div>
+        <div class="stat"><span class="pill">Время/задание</span><b id="sessTime">0.0с</b></div>
+        <div class="stat"><span class="pill">Решено</span><b id="sessSolved">0</b></div>
+      </div>
+      <div class="grid cols-2" style="margin-top:8px">
+        <div>
+          <div class="muted" style="margin-bottom:6px">Динамика точности</div>
+          <canvas class="chart" id="chartAcc"></canvas>
+        </div>
+        <div>
+          <div class="muted" style="margin-bottom:6px">Время на задания</div>
+          <canvas class="chart" id="chartTime"></canvas>
+        </div>
+      </div>
+    </section>
+
+    <!-- PROFILE -->
+    <section class="panel" data-view="profile">
+      <div class="title">Профиль</div>
+      <div class="grid cols-3">
+        <div class="panel">
+          <div class="title">Общее</div>
+          <div class="grid">
+            <div class="stat"><span class="pill">Уровень</span><b id="pfLevel">1</b></div>
+            <div class="stat"><span class="pill">Опыт</span><b id="pfXp">0 / 100</b></div>
+            <div class="stat"><span class="pill">Монеты</span><b id="pfCoins">0</b></div>
+            <div class="stat"><span class="pill">Точность</span><b id="pfAcc">0%</b></div>
+            <div class="stat"><span class="pill">Макс. серия</span><b id="pfMaxStreak">0</b></div>
+            <div class="stat"><span class="pill">Решено</span><b id="pfSolved">0</b></div>
+          </div>
+        </div>
+        <div class="panel">
+          <div class="title">По предметам</div>
+          <canvas class="chart" id="chartSubjects"></canvas>
+        </div>
+        <div class="panel">
+          <div class="title">Достижения</div>
+          <div class="grid" id="pfBadges"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SHOP (coin -> sticker packs) -->
+    <section class="panel" data-view="shop">
+      <div class="title">Магазин монет — стикерпаки</div>
+      <p class="muted">Обменивай монеты на наборы стикеров (как в Telegram). После покупки набор отмечается как «Владение».</p>
+      <div class="shop-grid" id="shopGrid"></div>
+    </section>
+
+    <!-- REFERRALS -->
+    <section class="panel" data-view="referrals">
+      <div class="title">Реферальная система</div>
+      <p class="muted">Зови друзей — получай <b>+50 XP</b> и <b>+20 монет</b> за каждого.</p>
+      <p>Твой код: <span class="pill" id="refCode">—</span></p>
+      <div style="display:flex; gap:8px; flex-wrap:wrap; margin:8px 0">
+        <button class="btn" id="copyCodeBtn">Скопировать</button>
+        <button class="btn" id="simulateInviteBtn">Симулировать приглашение</button>
+      </div>
+      <div class="stat-row">
+        <div class="stat"><span class="pill">Приглашено</span><b id="refCount">0</b></div>
+        <div class="stat"><span class="pill">XP бонус</span><b id="refXp">0</b></div>
+        <div class="stat"><span class="pill">Монеты</span><b id="refCoins">0</b></div>
+      </div>
+      <div style="height:8px"></div>
+      <div class="title">Есть код друга?</div>
+      <div style="display:flex; gap:8px; flex-wrap:wrap">
+        <input id="friendCode" class="answer-input" placeholder="Введи код друга — +10 монет">
+        <button class="btn" id="activateFriendCode">Активировать</button>
+      </div>
+      <p class="muted">* Демо хранит данные локально в твоём браузере.</p>
+    </section>
+
+  </div>
+</main>
+
+<!-- Level Modal -->
+<div class="modal" id="levelModal">
+  <div class="card">
+    <div class="title">Твой уровень и награды</div>
+    <p class="muted">За повышение уровня выдаются монеты и стикеры. Выполняй задания, поддерживай серию правильно решённых задач.</p>
+    <div class="grid cols-2">
+      <div class="panel">
+        <div class="stat-row">
+          <div class="stat"><span class="pill">Уровень</span><b id="lvNow">1</b></div>
+          <div class="stat"><span class="pill">Прогресс</span><b id="lvXp">0 / 100</b></div>
+        </div>
+        <div style="margin-top:8px">
+          <div class="muted">Следующая награда: +20 монет, стикер 🎓</div>
+        </div>
+      </div>
+      <div class="panel">
+        <div class="muted" style="margin-bottom:6px">История уровней</div>
+        <canvas class="chart" id="chartLevels"></canvas>
+      </div>
+    </div>
+    <div style="display:flex; justify-content:flex-end; margin-top:10px">
+      <button class="btn" id="closeLevelModal">Закрыть</button>
+    </div>
+  </div>
+</div>
+
+<!-- Post-Session Summary Modal -->
+<div class="modal" id="summaryModal">
+  <div class="card">
+    <div class="title">Сессия завершена</div>
+    <div class="summary">
+      <div class="row">
+        <div class="panel">
+          <div class="stat-row">
+            <div class="stat"><span class="pill">Решено</span><b id="sumSolved">0</b></div>
+            <div class="stat"><span class="pill">Точность</span><b id="sumAcc">0%</b></div>
+            <div class="stat"><span class="pill">Серия макс</span><b id="sumStreak">0</b></div>
+            <div class="stat"><span class="pill">XP за сессию</span><b id="sumXp">0</b></div>
+          </div>
+        </div>
+        <div class="panel">
+          <div class="muted">Распределение по предметам</div>
+          <canvas class="chart" id="sumSubjects"></canvas>
+        </div>
+      </div>
+      <div class="panel">
+        <div class="muted" style="margin-bottom:6px">Динамика времени</div>
+        <canvas class="chart" id="sumTime"></canvas>
+      </div>
+      <div style="display:flex; gap:8px; justify-content:flex-end">
+        <button class="btn" id="sumToHome">На главную</button>
+        <button class="btn primary" id="sumRestart">Новая сессия</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+/* ===== Save/State ===== */
+const DB_KEY = 'edquest.save.v4';
+const Save = { load(){ try{return JSON.parse(localStorage.getItem(DB_KEY))||null}catch(e){return null} },
+               save(s){ localStorage.setItem(DB_KEY, JSON.stringify(s)) } };
+const initState = ()=>({
+  profile:{ level:1, xp:0, xpHist:[], coins:0, maxStreak:0, solved:0, acc:0 },
+  session:{ round:0, correct:0, total:0, streak:0, times:[], accHist:[], xpGain:0, subjects:{math:0,russian:0,physics:0} },
+  subjects:{ math:{correct:0,total:0}, russian:{correct:0,total:0}, physics:{correct:0,total:0} },
+  badges:[],
+  referrals:{ code: genCode(), count:0, xp:0, coins:0, usedCodes:[] },
+  shop:{ owned:[] }
+});
+let state = Save.load() || initState();
+function genCode(){ return Math.random().toString(36).slice(2,7).toUpperCase(); }
+function toast(msg){ const t=document.getElementById('toast'); t.textContent=msg; t.style.display='block'; clearTimeout(toast._t); toast._t=setTimeout(()=>t.style.display='none', 2200); }
+
+/* ===== Navigation ===== */
+function setActive(view){
+  document.querySelectorAll('.tab').forEach(t=>t.classList.toggle('active', t.dataset.view===view));
+  document.querySelectorAll('[data-view]').forEach(s=> s.style.display = (s.dataset.view===view?'block':'none'));
+  if(view==='profile') renderProfile();
+  if(view==='referrals') renderReferrals();
+  if(view==='home') { renderHome(); buildPath(); }
+  if(view==='shop') renderShop();
+}
+document.getElementById('logo').addEventListener('click', ()=> setActive('home')); // logo -> home
+document.getElementById('goHome').addEventListener('click', ()=> setActive('home'));
+document.querySelectorAll('.tab').forEach(t=> t.addEventListener('click', ()=> setActive(t.dataset.view)));
+document.querySelectorAll('[data-jump]').forEach(b=> b.addEventListener('click', ()=> setActive(b.dataset.jump)));
+setActive('home');
+
+/* ===== Level modal (click on level pill) ===== */
+const levelModal = document.getElementById('levelModal');
+document.getElementById('levelPill').addEventListener('click', ()=>{ openLevelModal(); });
+document.getElementById('closeLevelModal').addEventListener('click', ()=> levelModal.style.display='none');
+levelModal.addEventListener('click', (e)=>{ if(e.target===levelModal) levelModal.style.display='none' });
+function openLevelModal(){
+  levelModal.style.display='flex';
+  document.getElementById('lvNow').textContent = state.profile.level;
+  const need = 100 + (state.profile.level-1)*50;
+  document.getElementById('lvXp').textContent = Math.floor(state.profile.xp)+' / '+need;
+  drawLine('chartLevels', state.profile.xpHist.slice(-20).map(v=>v.pct), 'Прогресс уровней %');
+}
+
+/* ===== Hero path ===== */
+function buildPath(){
+  const root = document.getElementById('homePath'); root.innerHTML = '';
+  const subjects = [{id:'math', name:'Математика', icon:'➗'},{id:'russian', name:'Русский', icon:'🇷🇺'},{id:'physics', name:'Физика', icon:'⚛️'}];
+  const totalShown = 9;
+  for(let i=0;i<totalShown;i++){
+    const s = subjects[i%subjects.length];
+    const div = document.createElement('div'); div.className='panel';
+    div.innerHTML = `<div style="display:flex; align-items:center; gap:12px;">
+      <div class="pill">${s.icon}</div>
+      <div style="flex:1"><div style="font-weight:900">${s.name} — Урок ${i+1}</div><div class="muted">Награда: ${8+i%4} XP</div></div>
+      <button class="btn">Пройти</button></div>`;
+    div.querySelector('.btn').addEventListener('click', ()=> setActive('play'));
+    root.appendChild(div);
+  }
+}
+
+/* ===== Questions: 30 per subject (placeholder EGE-level styles) ===== */
+const QUESTIONS = buildQuestions();
+function buildQuestions(){
+  const arr=[];
+  function pushMath(i){
+    // rotate mechanics
+    const mod=i%3;
+    if(mod===0) arr.push({id:`m${i}`,subject:'math',type:'mcq',text:`(Математика) Найти производную: f(x)=${i+1}x^2`,choices:['2x','2(x+1)','x^2','x'],answer:0,xp:10});
+    if(mod===1) arr.push({id:`m${i}`,subject:'math',type:'input',text:`(Математика) Реши: ${i+1}x - ${i} = 0. x = ?`,answer:String((i)/(i+1)),xp:12});
+    if(mod===2) arr.push({id:`m${i}`,subject:'math',type:'order',text:'(Математика) Упорядочить по возрастанию',items:['-2','0','3','1'],answer:['-2','0','1','3'],xp:12});
+  }
+  function pushRussian(i){
+    const mod=i%3;
+    if(mod===0) arr.push({id:`r${i}`,subject:'russian',type:'mcq',text:'Найдите слово с проверяемой гласной в корне',choices:['к...снуться','зар...сли','р...сток','ск...кать'],answer:0,xp:10});
+    if(mod===1) arr.push({id:`r${i}`,subject:'russian',type:'input',text:'Вставь пропущенные буквы: пр…зидент',answer:'президент',xp:10});
+    if(mod===2) arr.push({id:`r${i}`,subject:'russian',type:'order',text:'Собери правильное предложение',items:['на','идёт','улице','дождь'],answer:['на','улице','идёт','дождь'],xp:12});
+  }
+  function pushPhysics(i){
+    const mod=i%3;
+    if(mod===0) arr.push({id:`p${i}`,subject:'physics',type:'mcq',text:'Единица силы в СИ:',choices:['Джоуль','Паскаль','Ньютон','Ватт'],answer:2,xp:9});
+    if(mod===1) arr.push({id:`p${i}`,subject:'physics',type:'input',text:'Скорость света ~ 3·10^? м/с. Введи показатель',answer:'8',xp:11});
+    if(mod===2) arr.push({id:`p${i}`,subject:'physics',type:'order',text:'Расположи по возрастанию длины волны',items:['фиолетовый','зелёный','красный'],answer:['фиолетовый','зелёный','красный'],xp:12});
+  }
+  for(let i=1;i<=30;i++){ pushMath(i); pushRussian(i); pushPhysics(i); }
+  return arr;
+}
+let deck = [];
+const buildDeck = ()=> deck = QUESTIONS.slice().sort(()=>Math.random()-.5);
+
+/* ===== Topbar / XP ===== */
+function updateTopbar(){
+  document.getElementById('uiLevel').textContent = state.profile.level;
+  document.getElementById('uiCoins').textContent = state.profile.coins;
+  const need = 100 + (state.profile.level-1)*50;
+  const fill = Math.max(2, Math.round(state.profile.xp/need*100));
+  document.getElementById('uiXpFill').style.width = fill + '%';
+}
+updateTopbar();
+function addXP(n){
+  state.profile.xp+=n; state.session.xpGain += n;
+  let up=false;
+  while(state.profile.xp >= (100 + (state.profile.level-1)*50)){
+    state.profile.xp -= (100 + (state.profile.level-1)*50);
+    state.profile.level++; up=true; state.profile.xpHist.push({ts:Date.now(), pct:100});
+    // level reward
+    addCoins(20); // reward coins
+    toast('Новый уровень! +20 монет');
+  }
+  const need = 100 + (state.profile.level-1)*50;
+  state.profile.xpHist.push({ts:Date.now(), pct: Math.round(state.profile.xp/need*100)});
+  if(up) renderProfile();
+  updateTopbar(); Save.save(state);
+}
+function addCoins(n){ state.profile.coins += n; updateTopbar(); Save.save(state); }
+
+/* ===== Game flow ===== */
+const qArea = document.getElementById('questionArea');
+let qStart = 0;
+document.getElementById('skipBtn').addEventListener('click', nextQuestion);
+document.getElementById('nextBtn').addEventListener('click', nextQuestion);
+document.getElementById('startBtn').addEventListener('click', ()=>{ setActive('play'); if(state.session.total===0) startSession(); });
+document.getElementById('finishBtn').addEventListener('click', finishSession);
+
+function startSession(){ state.session = { round:0, correct:0, total:0, streak:0, times:[], accHist:[], xpGain:0, subjects:{math:0,russian:0,physics:0} }; buildDeck(); nextQuestion(); }
+function nextQuestion(){
+  document.getElementById('nextBtn').disabled = true;
+  if(deck.length===0) buildDeck();
+  const q = deck.shift(); state.session.round++; renderQuestion(q);
+}
+function renderQuestion(q){
+  qStart = performance.now();
+  document.getElementById('roundNum').textContent = state.session.round;
+  document.getElementById('subjectPill').textContent = 'Предмет: ' + ({math:'Математика',russian:'Русский',physics:'Физика'}[q.subject]);
+  qArea.innerHTML = '';
+  const title = document.createElement('div'); title.className='q-title'; title.textContent=q.text; qArea.appendChild(title);
+  if(q.type==='mcq'){
+    const box = document.createElement('div'); box.className='grid';
+    q.choices.forEach((c,i)=>{
+      const btn = document.createElement('div'); btn.className='choice'; btn.textContent='• '+c;
+      btn.addEventListener('click', ()=> checkAnswer(q, i===q.answer, btn, ()=> btn.classList.add(i===q.answer?'correct':'wrong')) );
+      box.appendChild(btn);
+    });
+    qArea.appendChild(box);
+  } else if(q.type==='input'){
+    const input = document.createElement('input'); input.className='answer-input'; input.placeholder='Введи ответ…';
+    const b = document.createElement('button'); b.className='btn'; b.textContent='Ответить';
+    b.addEventListener('click', ()=>{
+      const val = (input.value||'').trim().toLowerCase().replace(',', '.').replace(' ', '');
+      const ok = String(q.answer).toLowerCase() === val;
+      checkAnswer(q, ok, input, ()=> input.style.outline='2px solid '+(ok?'var(--ok)':'var(--bad)'));
+    });
+    input.addEventListener('keydown', e=>{ if(e.key==='Enter') b.click(); });
+    qArea.appendChild(input); qArea.appendChild(b);
+  } else if(q.type==='order'){
+    const list = document.createElement('ul'); list.className='order-list';
+    q.items.slice().sort(()=>Math.random()-.5).forEach(txt=>{
+      const li = document.createElement('li'); li.className='order-item'; li.textContent=txt; li.draggable=true;
+      li.addEventListener('dragstart', ()=> li.classList.add('dragging'));
+      li.addEventListener('dragend', ()=> li.classList.remove('dragging'));
+      list.appendChild(li);
+    });
+    list.addEventListener('dragover', e=>{
+      e.preventDefault();
+      const dragging=list.querySelector('.dragging'); if(!dragging) return;
+      const after = Array.from(list.querySelectorAll('.order-item:not(.dragging)')).find(el=> e.clientY < el.getBoundingClientRect().top + el.offsetHeight/2);
+      if(after) list.insertBefore(dragging, after); else list.appendChild(dragging);
+    });
+    const b = document.createElement('button'); b.className='btn'; b.textContent='Проверить порядок';
+    b.addEventListener('click', ()=>{
+      const arr = Array.from(list.children).map(li=>li.textContent);
+      const ok = JSON.stringify(arr)===JSON.stringify(q.answer);
+      checkAnswer(q, ok, list, ()=> list.style.outline='2px solid '+(ok?'var(--ok)':'var(--bad)'));
+    });
+    qArea.appendChild(list); qArea.appendChild(b);
+  }
+}
+function checkAnswer(q, ok, el, decorate){
+  decorate && decorate();
+  const elapsed = (performance.now()-qStart)/1000;
+  state.session.total++; state.profile.solved++; state.session.times.push(elapsed);
+  if(ok){ state.session.correct++; state.session.streak++; addXP(q.xp); addCoins(1); state.session.subjects[q.subject]++; toast('Верно! +' + q.xp + ' XP'); }
+  else { state.session.streak = 0; }
+  state.profile.maxStreak = Math.max(state.profile.maxStreak, state.session.streak);
+  state.subjects[q.subject].total++; if(ok) state.subjects[q.subject].correct++;
+  const acc = state.session.correct/state.session.total;
+  state.session.accHist.push(acc);
+  const totalCorrect = state.subjects.math.correct + state.subjects.russian.correct + state.subjects.physics.correct;
+  const total = state.subjects.math.total + state.subjects.russian.total + state.subjects.physics.total;
+  state.profile.acc = total? (totalCorrect/total) : 0;
+  Save.save(state); renderSession(); document.getElementById('nextBtn').disabled = false;
+}
+function renderSession(){
+  const acc = state.session.total? Math.round(state.session.correct/state.session.total*100):0;
+  document.getElementById('sessAcc').textContent = acc+'%';
+  document.getElementById('sessStreak').textContent = state.session.streak;
+  document.getElementById('sessSolved').textContent = state.session.total;
+  const t = state.session.times.at(-1)||0;
+  document.getElementById('sessTime').textContent = t.toFixed(1)+'с';
+  drawLine('chartAcc', state.session.accHist.map(v=>Math.round(v*100)), 'Точность %');
+  drawLine('chartTime', state.session.times, 'Время (с)');
+  updateTopbar(); buildPath();
+}
+function finishSession(){
+  // Show summary
+  const solved = state.session.total;
+  const acc = solved? Math.round(state.session.correct/solved*100):0;
+  document.getElementById('sumSolved').textContent = solved;
+  document.getElementById('sumAcc').textContent = acc+'%';
+  document.getElementById('sumStreak').textContent = state.profile.maxStreak;
+  document.getElementById('sumXp').textContent = state.session.xpGain;
+  // charts
+  drawBars('sumSubjects', [['Математика', state.session.subjects.math], ['Русский', state.session.subjects.russian], ['Физика', state.session.subjects.physics]]);
+  drawLine('sumTime', state.session.times, 'Время (с)');
+  document.getElementById('summaryModal').style.display='flex';
+}
+document.getElementById('sumToHome').addEventListener('click', ()=>{ document.getElementById('summaryModal').style.display='none'; setActive('home'); });
+document.getElementById('sumRestart').addEventListener('click', ()=>{ document.getElementById('summaryModal').style.display='none'; startSession(); });
+document.getElementById('summaryModal').addEventListener('click', (e)=>{ if(e.target.id==='summaryModal') e.currentTarget.style.display='none'; });
+
+/* ===== Profile ===== */
+function renderProfile(){
+  document.getElementById('pfLevel').textContent = state.profile.level;
+  const need = 100 + (state.profile.level-1)*50;
+  document.getElementById('pfXp').textContent = Math.floor(state.profile.xp)+' / '+need;
+  document.getElementById('pfCoins').textContent = state.profile.coins;
+  document.getElementById('pfAcc').textContent = Math.round(state.profile.acc*100)+'%';
+  document.getElementById('pfMaxStreak').textContent = state.profile.maxStreak;
+  document.getElementById('pfSolved').textContent = state.profile.solved;
+  const s = state.subjects;
+  drawBars('chartSubjects', [['Математика', pct(s.math)], ['Русский', pct(s.russian)], ['Физика', pct(s.physics)]]);
+  renderBadges('pfBadges');
+}
+function pct(x){ return x.total? Math.round(x.correct/x.total*100):0; }
+function renderBadges(id){
+  const root = document.getElementById(id); if(!root) return; root.innerHTML='';
+  if(state.badges.length===0) { root.innerHTML = '<div class="muted">Пока нет достижений — решай задачи!</div>'; return; }
+  for(const b of state.badges){
+    const card = document.createElement('div'); card.className='panel'; card.style.textAlign='center';
+    card.innerHTML = '<div style="font-size:28px">'+b.icon+'</div><div style="font-weight:900">'+b.name+'</div><div class="muted">'+b.desc+'</div>';
+    root.appendChild(card);
+  }
+}
+
+/* ===== Charts ===== */
+function drawLine(id, arr, label){
+  const c = document.getElementById(id); const ctx = c.getContext('2d');
+  c.width = c.clientWidth * devicePixelRatio; c.height = c.clientHeight * devicePixelRatio;
+  ctx.clearRect(0,0,c.width,c.height);
+  ctx.fillStyle='#9db3cf'; ctx.globalAlpha=.8; ctx.font=(12*devicePixelRatio)+'px system-ui'; ctx.fillText(label, 8*devicePixelRatio, 14*devicePixelRatio); ctx.globalAlpha=1;
+  if(arr.length<2) return;
+  const max=Math.max(...arr, 100), min=Math.min(...arr, 0);
+  const pad=10*devicePixelRatio, w=c.width-pad*2, h=c.height-pad*2;
+  ctx.beginPath();
+  arr.forEach((v,i)=>{ const x=pad + i/(arr.length-1)*w; const y=pad + (1-(v-min)/(max-min))*h; if(i===0) ctx.moveTo(x,y); else ctx.lineTo(x,y); });
+  ctx.strokeStyle= '#1CB0F6'; ctx.lineWidth= 2*devicePixelRatio; ctx.stroke();
+}
+function drawBars(id, pairs){
+  const c = document.getElementById(id); const ctx = c.getContext('2d');
+  c.width = c.clientWidth * devicePixelRatio; c.height = c.clientHeight * devicePixelRatio;
+  ctx.clearRect(0,0,c.width,c.height);
+  const pad=16*devicePixelRatio, bw=(c.width-pad*2)/(pairs.length*1.6);
+  const maxVal = Math.max(1, ...pairs.map(p=>p[1]));
+  pairs.forEach((p,i)=>{
+    const x = pad + i*bw*1.6; const h=(c.height-pad*2)*(p[1]/maxVal);
+    ctx.fillStyle = '#58CC02'; ctx.fillRect(x, c.height-pad-h, bw, h);
+    ctx.fillStyle = '#9db3cf'; ctx.font=(12*devicePixelRatio)+'px system-ui'; ctx.fillText(p[0], x, c.height-4*devicePixelRatio);
+  });
+}
+new ResizeObserver(()=>{ renderSession(); if(document.querySelector('[data-view="profile"]').style.display==='block') renderProfile(); }).observe(document.getElementById('views'));
+
+/* ===== Shop ===== */
+const STICKERS = [
+  {id:'s1', name:'Учёба — Базовый', icon:'📘', price:80},
+  {id:'s2', name:'Математика — Мемы', icon:'➗😄', price:120},
+  {id:'s3', name:'Русский — Смайлы', icon:'🇷🇺✨', price:100},
+  {id:'s4', name:'Физика — Космос', icon:'⚛️🚀', price:150},
+  {id:'s5', name:'ЕГЭ — Легендарный', icon:'🎓🔥', price:300},
+  {id:'s6', name:'Фан — Котики', icon:'🐱', price:90},
+];
+function renderShop(){
+  const root = document.getElementById('shopGrid'); root.innerHTML='';
+  for(const s of STICKERS){
+    const owned = state.shop.owned.includes(s.id);
+    const div = document.createElement('div'); div.className='sticker';
+    div.innerHTML = `<div class="img">${s.icon}</div>
+      <div style="font-weight:900">${s.name}</div>
+      <div class="price">Цена: ${s.price} 🪙</div>
+      <button class="btn ${owned?'':'primary'}" ${owned?'disabled':''}>${owned?'Владение':'Купить'}</button>`;
+    div.querySelector('button').addEventListener('click', ()=>{
+      if(owned) return;
+      if(state.profile.coins < s.price){ toast('Не хватает монет'); return; }
+      state.profile.coins -= s.price; state.shop.owned.push(s.id); Save.save(state); renderShop(); updateTopbar(); toast('Куплено! Стикерпак добавлен.');
+    });
+    root.appendChild(div);
+  }
+}
+
+/* ===== Referrals ===== */
+function renderReferrals(){
+  document.getElementById('refCode').textContent = state.referrals.code;
+  document.getElementById('refCount').textContent = state.referrals.count;
+  document.getElementById('refXp').textContent = state.referrals.xp;
+  document.getElementById('refCoins').textContent = state.referrals.coins;
+}
+document.getElementById('copyCodeBtn').addEventListener('click', async ()=>{ await navigator.clipboard.writeText(state.referrals.code); toast('Код скопирован!'); });
+document.getElementById('simulateInviteBtn').addEventListener('click', ()=>{
+  state.referrals.count++; state.referrals.xp+=50; state.referrals.coins+=20; addXP(50); addCoins(20); Save.save(state); renderReferrals(); toast('+1 приглашение');
+});
+document.getElementById('activateFriendCode').addEventListener('click', ()=>{
+  const code=(document.getElementById('friendCode').value||'').trim().toUpperCase();
+  if(!code) return; if(code===state.referrals.code){ toast('Нельзя свой код 🙂'); return; }
+  if(state.referrals.usedCodes.includes(code)){ toast('Код уже активирован'); return; }
+  state.referrals.usedCodes.push(code); addCoins(10); Save.save(state); toast('Код активирован! +10 монет');
+});
+
+/* ===== Init ===== */
+renderHome(); buildPath(); renderShop(); updateTopbar();
+function renderHome(){ /* placeholder for future home data */ }
+</script>
+</body>
+</html>
