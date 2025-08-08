@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>EdQuest — подготовка к ЕГЭ (v4)</title>
+<title>EdQuest — ЕГЭ (v5, левое меню)</title>
 <style>
   :root{
     --fs-12: clamp(12px, 0.78rem + 0.1vw, 14px);
@@ -12,66 +12,58 @@
     --fs-18: clamp(18px, 1rem + 0.45vw, 22px);
     --fs-22: clamp(22px, 1.05rem + 0.8vw, 28px);
     --fs-28: clamp(24px, 1.2rem + 1.2vw, 32px);
-    --radius: 12px;
-    --space-8: 8px; --space-12: 12px; --space-16: 16px;
-    --space-20: 20px; --space-24: 24px; --space-32: 32px;
-    --elev-1: 0 6px 16px rgba(0,0,0,.18);
-    --elev-2: 0 12px 32px rgba(0,0,0,.25);
-    --bg: #0b1117; --panel:#0f1722; --panel-2:#101b2b;
+    --panel:#0f1722; --panel-2:#101b2b; --bg:#0b1117;
     --text:#f3f7ff; --muted:#9db3cf;
     --green:#58CC02; --blue:#1CB0F6; --gold:#FFC715;
     --ok:#00d27a; --bad:#ff6b6b;
-    --content-max: min(1200px, 100%);
+    --radius: 12px;
+    --sidebar-w: 260px;
+    --content-max: 1400px;
   }
   *{box-sizing:border-box}
-  html, body{height:100%}
+  html,body{height:100%}
   body{ margin:0; font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial;
-        background: radial-gradient(1200px 800px at 10% -10%, rgba(28,176,246,.08), rgba(0,0,0,0) 40%), #0b1117;
+        background: radial-gradient(1200px 800px at 10% -10%, rgba(28,176,246,.08), rgba(0,0,0,0) 40%), var(--bg);
         color: var(--text); -webkit-font-smoothing: antialiased; }
-  /* --- Static top menu for ALL screens --- */
-  header.appbar{
-    position: sticky; top:0; z-index:5;
-    background: rgba(15,23,34,.92); backdrop-filter: blur(8px);
-    border-bottom: 1px solid rgba(255,255,255,.08);
+  /* ===== Left sidebar (fixed) ===== */
+  .sidebar{
+    position: fixed; left:0; top:0; bottom:0; width: var(--sidebar-w);
+    background: rgba(15,23,34,.98); border-right:1px solid rgba(255,255,255,.08);
+    display:flex; flex-direction:column; padding:16px; gap:12px; z-index:5;
   }
-  .appbar .row{ display:flex; align-items:center; gap:12px; padding:10px 16px; max-width: var(--content-max); margin:0 auto; }
-  .brand{ display:flex; align-items:center; gap:10px; font-weight:900; font-size: var(--fs-16); cursor:pointer }
+  .brand{ display:flex; align-items:center; gap:10px; font-weight:900; font-size: var(--fs-18); cursor:pointer; padding:8px 6px; border-radius:10px }
   .logo{ width:28px; height:28px; border-radius:8px; background: conic-gradient(from 0deg, var(--green), var(--blue), var(--gold), var(--green)); box-shadow: inset 0 0 20px rgba(255,255,255,.18); }
-  nav.tabs{ display:flex; gap:8px; margin-left: 12px; flex-wrap: wrap }
-  .tab{ padding:8px 12px; border-radius:12px; font-weight:900; color: var(--muted); cursor:pointer; white-space:nowrap }
-  .tab.active{ color:var(--text); background: rgba(255,255,255,.08) }
-  .spacer{ flex:1 }
-  .xp-wrap{ display:flex; align-items:center; gap:10px }
-  .pill{ background: rgba(255,255,255,.08); padding: 6px 10px; border-radius:999px; font-weight:900; font-size: var(--fs-12); cursor:pointer }
-  .xp-bar{ width: 160px; height: 10px; background: rgba(255,255,255,.12); border-radius: 999px; overflow: hidden }
-  .xp-fill{ height: 100%; width: 0%; background: linear-gradient(90deg, var(--green), var(--blue)); }
-  .home-link{ padding:6px 10px; border-radius:10px; border:1px solid rgba(255,255,255,.12); cursor:pointer; font-weight:900 }
-  .home-link:hover{ background: rgba(255,255,255,.06) }
+  nav .tab{ display:flex; align-items:center; gap:10px; padding:10px 12px; border-radius:10px; color:var(--muted); font-weight:900; cursor:pointer }
+  nav .tab.active{ color:var(--text); background: rgba(255,255,255,.08) }
+  .side-stat{ margin-top:auto; display:grid; gap:8px }
+  .pill{ background: rgba(255,255,255,.08); padding:6px 10px; border-radius:999px; font-weight:900; font-size: var(--fs-12); cursor:pointer; text-align:center }
+  .xp-bar{ width:100%; height:10px; background: rgba(255,255,255,.12); border-radius:999px; overflow:hidden }
+  .xp-fill{ height:100%; width:0%; background: linear-gradient(90deg, var(--green), var(--blue)) }
+  .coins{ text-align:center; font-weight:900; color:var(--gold) }
 
-  main{ padding: 16px; }
-  .container{ max-width: var(--content-max); margin: 0 auto; display:grid; gap: var(--space-16); }
-  .panel{ background: var(--panel); border:1px solid rgba(255,255,255,.06); border-radius: var(--radius); padding:16px; box-shadow: var(--elev-1) }
+  /* ===== Content area ===== */
+  .content{ margin-left: var(--sidebar-w); padding:20px; }
+  .container{ width:min(var(--content-max), 100%); margin:0 auto; display:grid; gap:16px }
+  .panel{ background: var(--panel); border:1px solid rgba(255,255,255,.08); border-radius: var(--radius); padding:16px; }
   .title{ font-size: var(--fs-22); font-weight:900; margin-bottom:6px }
   .muted{ color: var(--muted) }
   .btn{ appearance:none; border:1px solid rgba(255,255,255,.14); border-radius:12px; padding:12px 14px; background: linear-gradient(180deg,#1b2740,#0f1a2b); color:var(--text); font-weight:900; cursor:pointer }
   .btn.primary{ background: linear-gradient(180deg,#1f3f26,#0f2a14); border-color: rgba(88,204,2,.6) }
-  .btn:active{ transform: translateY(1px) }
   .btn.block{ width:100% }
-
-  /* Hero with illustration */
-  .hero{ position:relative; min-height: 220px; display:grid; align-items:center; overflow:hidden; }
-  .hero-content{ position:relative; display:grid; gap: 10px; grid-template-columns: 1fr 320px; align-items:center }
-  @media (max-width: 900px){ .hero-content{ grid-template-columns: 1fr } }
-  .hero h1{ font-size: var(--fs-28); margin: 0 0 4px; }
-  .hero p{ font-size: var(--fs-16); margin:0; }
-  .hero svg{ width:100%; height:auto; opacity:.85; filter: drop-shadow(0 6px 20px rgba(0,0,0,.35)); }
 
   .grid{ display:grid; gap:12px }
   .cols-2{ grid-template-columns: repeat(2, minmax(0,1fr)) }
   .cols-3{ grid-template-columns: repeat(3, minmax(0,1fr)) }
-  @media (max-width: 1100px){ .cols-2,.cols-3{ grid-template-columns: 1fr } }
+  @media (max-width: 1200px){ .cols-2,.cols-3{ grid-template-columns: 1fr } }
 
-  /* Question UI with improved paddings */
+  /* Hero */
+  .hero{ display:grid; grid-template-columns: 1fr 340px; gap:16px; align-items:center }
+  @media (max-width: 1000px){ .hero{ grid-template-columns: 1fr } }
+  .hero svg{ width:100%; height:auto; opacity:.9; filter: drop-shadow(0 6px 20px rgba(0,0,0,.35)); }
+
+  /* Play UI: session right on desktop, above on smaller */
+  .play-wrap{ display:grid; grid-template-columns: 2fr 1fr; gap:16px }
+  @media (max-width: 1200px){ .play-wrap{ grid-template-columns: 1fr } }
   .q-title{ font-size: var(--fs-18); font-weight:900; margin-bottom: 10px }
   .choice{ padding: 14px; border-radius: 12px; border:1px solid rgba(255,255,255,.12); background: linear-gradient(180deg,#121d2d,#0e1725); font-weight:800; cursor:pointer }
   .choice.correct{ outline:2px solid var(--ok) } .choice.wrong{ outline:2px solid var(--bad) }
@@ -79,7 +71,6 @@
   .order-list{ list-style:none; margin:0; padding:0; display:grid; gap:10px }
   .order-item{ padding:14px; border-radius:12px; background:#0f1a2b; border:1px solid rgba(255,255,255,.16); cursor:grab }
   .order-item.dragging{ opacity:.6 }
-
   .stat-row{ display:flex; gap:12px; flex-wrap:wrap }
   .stat{ display:flex; align-items:center; gap:10px; background: rgba(255,255,255,.06); border-radius:12px; padding:8px 12px }
   .stat b{ font-size: var(--fs-18) }
@@ -87,83 +78,72 @@
 
   /* Shop */
   .shop-grid{ display:grid; gap:12px; grid-template-columns: repeat(3, minmax(0,1fr)); }
-  @media (max-width: 900px){ .shop-grid{ grid-template-columns: 1fr 1fr } }
-  @media (max-width: 560px){ .shop-grid{ grid-template-columns: 1fr } }
+  @media (max-width: 1200px){ .shop-grid{ grid-template-columns: 1fr 1fr } }
+  @media (max-width: 700px){ .shop-grid{ grid-template-columns: 1fr } }
   .sticker{ background: var(--panel-2); border:1px solid rgba(255,255,255,.08); border-radius:12px; padding:12px; display:grid; gap:8px; text-align:center }
-  .sticker .img{ font-size:40px; }
+  .sticker .img{ font-size:42px; }
   .price{ font-weight:900; color: var(--gold) }
 
-  /* Toast centered */
-  .toast{ position: fixed; left:50%; bottom: 80px; transform: translateX(-50%);
+  /* Toast (centered) */
+  .toast{ position: fixed; left:50%; bottom: 60px; transform: translateX(-50%);
           background: rgba(10,16,24,.95); border:1px solid rgba(255,255,255,.12); padding: 12px 14px; border-radius: 10px; display:none; z-index:10 }
 
-  /* Level modal */
+  /* Modals */
   .modal{ position: fixed; inset:0; background: rgba(0,0,0,.5); display:none; align-items:center; justify-content:center; z-index:20 }
-  .modal .card{ width:min(520px, 92vw); background: var(--panel); border:1px solid rgba(255,255,255,.12); border-radius:14px; padding:16px; box-shadow: var(--elev-2) }
-
-  /* Post-session summary */
-  .summary{ display:grid; gap:12px }
-  .summary .row{ display:grid; gap:12px; grid-template-columns: 1fr 1fr }
-  @media (max-width: 900px){ .summary .row{ grid-template-columns: 1fr } }
+  .modal .card{ width:min(520px, 92vw); background: var(--panel); border:1px solid rgba(255,255,255,.12); border-radius:14px; padding:16px; box-shadow: 0 12px 32px rgba(0,0,0,.5) }
 </style>
 </head>
 <body>
-<header class="appbar">
-  <div class="row">
-    <div class="brand" id="logo"><div class="logo"></div> EdQuest</div>
-    <nav class="tabs" id="tabs">
-      <div class="tab active" data-view="home">Главная</div>
-      <div class="tab" data-view="play">Игра</div>
-      <div class="tab" data-view="profile">Профиль</div>
-      <div class="tab" data-view="shop">Магазин</div>
-      <div class="tab" data-view="referrals">Рефералы</div>
-    </nav>
-    <div class="spacer"></div>
-    <div class="home-link" id="goHome">↩ Вернуться на главную</div>
-    <div class="xp-wrap">
-      <div class="pill" id="levelPill">Ур. <span id="uiLevel">1</span></div>
-      <div class="xp-bar"><div class="xp-fill" id="uiXpFill"></div></div>
-      <div class="pill">🪙 <span id="uiCoins">0</span></div>
-    </div>
+<!-- Sidebar -->
+<aside class="sidebar">
+  <div class="brand" id="logo"><div class="logo"></div> EdQuest</div>
+  <nav>
+    <div class="tab active" data-view="home">🏠 Главная</div>
+    <div class="tab" data-view="play">▶️ Игра</div>
+    <div class="tab" data-view="profile">👤 Профиль</div>
+    <div class="tab" data-view="shop">🛍 Магазин</div>
+    <div class="tab" data-view="referrals">🤝 Рефералы</div>
+  </nav>
+  <div class="side-stat">
+    <div class="pill" id="levelPill">Ур. <span id="uiLevel">1</span></div>
+    <div class="xp-bar"><div class="xp-fill" id="uiXpFill"></div></div>
+    <div class="coins">🪙 <span id="uiCoins">0</span></div>
   </div>
-</header>
+</aside>
 
-<main>
+<!-- Content -->
+<div class="content">
   <div class="container" id="views">
     <!-- HOME -->
     <section class="panel" data-view="home">
       <div class="hero">
-        <div class="hero-content">
-          <div>
-            <h1>Учись как в игре</h1>
-            <p class="muted">Короткие задания по математике, русскому, физике. Стрики, уровни и XP — как в лучших обучающих приложениях.</p>
-            <div style="display:flex; gap:8px; margin-top:12px; flex-wrap:wrap">
-              <button class="btn primary" id="startBtn">Начать игру</button>
-              <button class="btn" data-jump="profile">Мой прогресс</button>
-            </div>
+        <div>
+          <div class="title">Учись как в игре</div>
+          <p class="muted">Короткие задания по математике, русскому, физике. Стрики, уровни и XP — знакомая геймификация, но без шумного UI.</p>
+          <div style="display:flex; gap:8px; margin-top:12px; flex-wrap:wrap">
+            <button class="btn primary" id="startBtn">Начать игру</button>
+            <button class="btn" data-jump="profile">Мой прогресс</button>
           </div>
-          <!-- unobtrusive educational illustration (inline SVG) -->
-          <svg viewBox="0 0 300 220" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-            <defs>
-              <linearGradient id="g1" x1="0" x2="1" y1="0" y2="1">
-                <stop offset="0" stop-color="#58CC02" stop-opacity="0.9"/>
-                <stop offset="1" stop-color="#1CB0F6" stop-opacity="0.9"/>
-              </linearGradient>
-            </defs>
-            <rect x="10" y="20" width="280" height="160" rx="14" fill="url(#g1)" opacity="0.2"/>
-            <g fill="#fff" opacity="0.9">
-              <circle cx="60" cy="80" r="22" opacity="0.9"/>
-              <rect x="100" y="58" width="160" height="12" rx="6" opacity="0.7"/>
-              <rect x="100" y="78" width="120" height="10" rx="5" opacity="0.7"/>
-              <rect x="20" y="120" width="240" height="12" rx="6" opacity="0.7"/>
-              <rect x="20" y="140" width="200" height="10" rx="5" opacity="0.7"/>
-            </g>
-            <g fill="#fff">
-              <text x="20" y="200" font-size="14" fill="#cfe9ff">a^2 + b^2 = c^2</text>
-              <text x="200" y="200" font-size="14" fill="#cfe9ff">F = ma</text>
-            </g>
-          </svg>
         </div>
+        <!-- unobtrusive educational illustration -->
+        <svg viewBox="0 0 300 220" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+          <defs><linearGradient id="g1" x1="0" x2="1" y1="0" y2="1">
+            <stop offset="0" stop-color="#58CC02" stop-opacity="0.9"/>
+            <stop offset="1" stop-color="#1CB0F6" stop-opacity="0.9"/>
+          </linearGradient></defs>
+          <rect x="10" y="20" width="280" height="160" rx="14" fill="url(#g1)" opacity="0.2"/>
+          <g fill="#fff" opacity="0.9">
+            <circle cx="60" cy="80" r="22" opacity="0.9"/>
+            <rect x="100" y="58" width="160" height="12" rx="6" opacity="0.7"/>
+            <rect x="100" y="78" width="120" height="10" rx="5" opacity="0.7"/>
+            <rect x="20" y="120" width="240" height="12" rx="6" opacity="0.7"/>
+            <rect x="20" y="140" width="200" height="10" rx="5" opacity="0.7"/>
+          </g>
+          <g fill="#fff">
+            <text x="20" y="200" font-size="14" fill="#cfe9ff">a^2 + b^2 = c^2</text>
+            <text x="200" y="200" font-size="14" fill="#cfe9ff">F = ma</text>
+          </g>
+        </svg>
       </div>
     </section>
 
@@ -173,36 +153,30 @@
       <div class="grid" id="homePath"></div>
     </section>
 
-    <!-- PLAY -->
-    <section class="panel" data-view="play">
-      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px">
-        <div class="title">Раунд <span id="roundNum">1</span></div>
-        <div class="pill" id="subjectPill">Предмет: —</div>
-      </div>
-      <div id="questionArea"></div>
-      <div style="display:flex; gap:8px; margin-top:8px; flex-wrap:wrap">
-        <button class="btn" id="skipBtn">Пропустить</button>
-        <button class="btn" id="finishBtn">Завершить сессию</button>
-        <button class="btn" id="nextBtn" disabled>Дальше</button>
-      </div>
-    </section>
-
-    <!-- SESSION PANEL (improved) -->
-    <section class="panel" data-view="play">
-      <div class="title">Сессия</div>
-      <div class="stat-row">
-        <div class="stat"><span class="pill">Точность</span><b id="sessAcc">0%</b></div>
-        <div class="stat"><span class="pill">Серия</span><b id="sessStreak">0</b></div>
-        <div class="stat"><span class="pill">Время/задание</span><b id="sessTime">0.0с</b></div>
-        <div class="stat"><span class="pill">Решено</span><b id="sessSolved">0</b></div>
-      </div>
-      <div class="grid cols-2" style="margin-top:8px">
-        <div>
-          <div class="muted" style="margin-bottom:6px">Динамика точности</div>
-          <canvas class="chart" id="chartAcc"></canvas>
+    <!-- PLAY: session at right (desktop) / top (mobile) -->
+    <section class="play-wrap" data-view="play">
+      <div class="panel">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px">
+          <div class="title">Раунд <span id="roundNum">1</span></div>
+          <div class="pill" id="subjectPill">Предмет: —</div>
         </div>
-        <div>
-          <div class="muted" style="margin-bottom:6px">Время на задания</div>
+        <div id="questionArea"></div>
+        <div style="display:flex; gap:8px; margin-top:8px; flex-wrap:wrap">
+          <button class="btn" id="skipBtn">Пропустить</button>
+          <button class="btn" id="finishBtn">Завершить сессию</button>
+          <button class="btn" id="nextBtn" disabled>Дальше</button>
+        </div>
+      </div>
+      <div class="panel">
+        <div class="title">Сессия</div>
+        <div class="stat-row">
+          <div class="stat"><span class="pill">Точность</span><b id="sessAcc">0%</b></div>
+          <div class="stat"><span class="pill">Серия</span><b id="sessStreak">0</b></div>
+          <div class="stat"><span class="pill">Время/задание</span><b id="sessTime">0.0с</b></div>
+          <div class="stat"><span class="pill">Решено</span><b id="sessSolved">0</b></div>
+        </div>
+        <div class="grid" style="margin-top:8px">
+          <canvas class="chart" id="chartAcc"></canvas>
           <canvas class="chart" id="chartTime"></canvas>
         </div>
       </div>
@@ -234,10 +208,10 @@
       </div>
     </section>
 
-    <!-- SHOP (coin -> sticker packs) -->
+    <!-- SHOP -->
     <section class="panel" data-view="shop">
       <div class="title">Магазин монет — стикерпаки</div>
-      <p class="muted">Обменивай монеты на наборы стикеров (как в Telegram). После покупки набор отмечается как «Владение».</p>
+      <p class="muted">Обменивай монеты на наборы стикеров как в Telegram. После покупки набор отмечается как «Владение».</p>
       <div class="shop-grid" id="shopGrid"></div>
     </section>
 
@@ -265,27 +239,19 @@
     </section>
 
   </div>
-</main>
+</div>
 
 <!-- Level Modal -->
 <div class="modal" id="levelModal">
   <div class="card">
     <div class="title">Твой уровень и награды</div>
-    <p class="muted">За повышение уровня выдаются монеты и стикеры. Выполняй задания, поддерживай серию правильно решённых задач.</p>
-    <div class="grid cols-2">
-      <div class="panel">
-        <div class="stat-row">
-          <div class="stat"><span class="pill">Уровень</span><b id="lvNow">1</b></div>
-          <div class="stat"><span class="pill">Прогресс</span><b id="lvXp">0 / 100</b></div>
-        </div>
-        <div style="margin-top:8px">
-          <div class="muted">Следующая награда: +20 монет, стикер 🎓</div>
-        </div>
+    <p class="muted">За повышение уровня выдаются монеты и стикеры. Выполняй задания, держи серию — и растёшь быстрее.</p>
+    <div class="grid">
+      <div class="stat-row">
+        <div class="stat"><span class="pill">Уровень</span><b id="lvNow">1</b></div>
+        <div class="stat"><span class="pill">Прогресс</span><b id="lvXp">0 / 100</b></div>
       </div>
-      <div class="panel">
-        <div class="muted" style="margin-bottom:6px">История уровней</div>
-        <canvas class="chart" id="chartLevels"></canvas>
-      </div>
+      <canvas class="chart" id="chartLevels"></canvas>
     </div>
     <div style="display:flex; justify-content:flex-end; margin-top:10px">
       <button class="btn" id="closeLevelModal">Закрыть</button>
@@ -297,25 +263,15 @@
 <div class="modal" id="summaryModal">
   <div class="card">
     <div class="title">Сессия завершена</div>
-    <div class="summary">
-      <div class="row">
-        <div class="panel">
-          <div class="stat-row">
-            <div class="stat"><span class="pill">Решено</span><b id="sumSolved">0</b></div>
-            <div class="stat"><span class="pill">Точность</span><b id="sumAcc">0%</b></div>
-            <div class="stat"><span class="pill">Серия макс</span><b id="sumStreak">0</b></div>
-            <div class="stat"><span class="pill">XP за сессию</span><b id="sumXp">0</b></div>
-          </div>
-        </div>
-        <div class="panel">
-          <div class="muted">Распределение по предметам</div>
-          <canvas class="chart" id="sumSubjects"></canvas>
-        </div>
+    <div class="grid">
+      <div class="stat-row">
+        <div class="stat"><span class="pill">Решено</span><b id="sumSolved">0</b></div>
+        <div class="stat"><span class="pill">Точность</span><b id="sumAcc">0%</b></div>
+        <div class="stat"><span class="pill">Серия макс</span><b id="sumStreak">0</b></div>
+        <div class="stat"><span class="pill">XP за сессию</span><b id="sumXp">0</b></div>
       </div>
-      <div class="panel">
-        <div class="muted" style="margin-bottom:6px">Динамика времени</div>
-        <canvas class="chart" id="sumTime"></canvas>
-      </div>
+      <canvas class="chart" id="sumSubjects"></canvas>
+      <canvas class="chart" id="sumTime"></canvas>
       <div style="display:flex; gap:8px; justify-content:flex-end">
         <button class="btn" id="sumToHome">На главную</button>
         <button class="btn primary" id="sumRestart">Новая сессия</button>
@@ -328,7 +284,7 @@
 
 <script>
 /* ===== Save/State ===== */
-const DB_KEY = 'edquest.save.v4';
+const DB_KEY = 'edquest.save.v5';
 const Save = { load(){ try{return JSON.parse(localStorage.getItem(DB_KEY))||null}catch(e){return null} },
                save(s){ localStorage.setItem(DB_KEY, JSON.stringify(s)) } };
 const initState = ()=>({
@@ -353,12 +309,11 @@ function setActive(view){
   if(view==='shop') renderShop();
 }
 document.getElementById('logo').addEventListener('click', ()=> setActive('home')); // logo -> home
-document.getElementById('goHome').addEventListener('click', ()=> setActive('home'));
 document.querySelectorAll('.tab').forEach(t=> t.addEventListener('click', ()=> setActive(t.dataset.view)));
 document.querySelectorAll('[data-jump]').forEach(b=> b.addEventListener('click', ()=> setActive(b.dataset.jump)));
 setActive('home');
 
-/* ===== Level modal (click on level pill) ===== */
+/* ===== Level modal ===== */
 const levelModal = document.getElementById('levelModal');
 document.getElementById('levelPill').addEventListener('click', ()=>{ openLevelModal(); });
 document.getElementById('closeLevelModal').addEventListener('click', ()=> levelModal.style.display='none');
@@ -371,7 +326,7 @@ function openLevelModal(){
   drawLine('chartLevels', state.profile.xpHist.slice(-20).map(v=>v.pct), 'Прогресс уровней %');
 }
 
-/* ===== Hero path ===== */
+/* ===== Home path ===== */
 function buildPath(){
   const root = document.getElementById('homePath'); root.innerHTML = '';
   const subjects = [{id:'math', name:'Математика', icon:'➗'},{id:'russian', name:'Русский', icon:'🇷🇺'},{id:'physics', name:'Физика', icon:'⚛️'}];
@@ -388,12 +343,11 @@ function buildPath(){
   }
 }
 
-/* ===== Questions: 30 per subject (placeholder EGE-level styles) ===== */
+/* ===== Questions: 30 per subject ===== */
 const QUESTIONS = buildQuestions();
 function buildQuestions(){
   const arr=[];
   function pushMath(i){
-    // rotate mechanics
     const mod=i%3;
     if(mod===0) arr.push({id:`m${i}`,subject:'math',type:'mcq',text:`(Математика) Найти производную: f(x)=${i+1}x^2`,choices:['2x','2(x+1)','x^2','x'],answer:0,xp:10});
     if(mod===1) arr.push({id:`m${i}`,subject:'math',type:'input',text:`(Математика) Реши: ${i+1}x - ${i} = 0. x = ?`,answer:String((i)/(i+1)),xp:12});
@@ -417,31 +371,28 @@ function buildQuestions(){
 let deck = [];
 const buildDeck = ()=> deck = QUESTIONS.slice().sort(()=>Math.random()-.5);
 
-/* ===== Topbar / XP ===== */
-function updateTopbar(){
+/* ===== Topbar replacement (in sidebar) ===== */
+function updateSidebarStats(){
   document.getElementById('uiLevel').textContent = state.profile.level;
   document.getElementById('uiCoins').textContent = state.profile.coins;
   const need = 100 + (state.profile.level-1)*50;
   const fill = Math.max(2, Math.round(state.profile.xp/need*100));
   document.getElementById('uiXpFill').style.width = fill + '%';
 }
-updateTopbar();
+updateSidebarStats();
 function addXP(n){
   state.profile.xp+=n; state.session.xpGain += n;
   let up=false;
   while(state.profile.xp >= (100 + (state.profile.level-1)*50)){
     state.profile.xp -= (100 + (state.profile.level-1)*50);
     state.profile.level++; up=true; state.profile.xpHist.push({ts:Date.now(), pct:100});
-    // level reward
-    addCoins(20); // reward coins
-    toast('Новый уровень! +20 монет');
+    addCoins(20); toast('Новый уровень! +20 монет');
   }
   const need = 100 + (state.profile.level-1)*50;
   state.profile.xpHist.push({ts:Date.now(), pct: Math.round(state.profile.xp/need*100)});
-  if(up) renderProfile();
-  updateTopbar(); Save.save(state);
+  updateSidebarStats(); Save.save(state);
 }
-function addCoins(n){ state.profile.coins += n; updateTopbar(); Save.save(state); }
+function addCoins(n){ state.profile.coins += n; updateSidebarStats(); Save.save(state); }
 
 /* ===== Game flow ===== */
 const qArea = document.getElementById('questionArea');
@@ -528,17 +479,15 @@ function renderSession(){
   document.getElementById('sessTime').textContent = t.toFixed(1)+'с';
   drawLine('chartAcc', state.session.accHist.map(v=>Math.round(v*100)), 'Точность %');
   drawLine('chartTime', state.session.times, 'Время (с)');
-  updateTopbar(); buildPath();
+  updateSidebarStats(); buildPath();
 }
 function finishSession(){
-  // Show summary
   const solved = state.session.total;
   const acc = solved? Math.round(state.session.correct/solved*100):0;
   document.getElementById('sumSolved').textContent = solved;
   document.getElementById('sumAcc').textContent = acc+'%';
   document.getElementById('sumStreak').textContent = state.profile.maxStreak;
   document.getElementById('sumXp').textContent = state.session.xpGain;
-  // charts
   drawBars('sumSubjects', [['Математика', state.session.subjects.math], ['Русский', state.session.subjects.russian], ['Физика', state.session.subjects.physics]]);
   drawLine('sumTime', state.session.times, 'Время (с)');
   document.getElementById('summaryModal').style.display='flex';
@@ -619,7 +568,7 @@ function renderShop(){
     div.querySelector('button').addEventListener('click', ()=>{
       if(owned) return;
       if(state.profile.coins < s.price){ toast('Не хватает монет'); return; }
-      state.profile.coins -= s.price; state.shop.owned.push(s.id); Save.save(state); renderShop(); updateTopbar(); toast('Куплено! Стикерпак добавлен.');
+      state.profile.coins -= s.price; state.shop.owned.push(s.id); Save.save(state); renderShop(); updateSidebarStats(); toast('Куплено! Стикерпак добавлен.');
     });
     root.appendChild(div);
   }
@@ -632,11 +581,11 @@ function renderReferrals(){
   document.getElementById('refXp').textContent = state.referrals.xp;
   document.getElementById('refCoins').textContent = state.referrals.coins;
 }
-document.getElementById('copyCodeBtn').addEventListener('click', async ()=>{ await navigator.clipboard.writeText(state.referrals.code); toast('Код скопирован!'); });
-document.getElementById('simulateInviteBtn').addEventListener('click', ()=>{
+document.getElementById('copyCodeBtn')?.addEventListener('click', async ()=>{ await navigator.clipboard.writeText(state.referrals.code); toast('Код скопирован!'); });
+document.getElementById('simulateInviteBtn')?.addEventListener('click', ()=>{
   state.referrals.count++; state.referrals.xp+=50; state.referrals.coins+=20; addXP(50); addCoins(20); Save.save(state); renderReferrals(); toast('+1 приглашение');
 });
-document.getElementById('activateFriendCode').addEventListener('click', ()=>{
+document.getElementById('activateFriendCode')?.addEventListener('click', ()=>{
   const code=(document.getElementById('friendCode').value||'').trim().toUpperCase();
   if(!code) return; if(code===state.referrals.code){ toast('Нельзя свой код 🙂'); return; }
   if(state.referrals.usedCodes.includes(code)){ toast('Код уже активирован'); return; }
@@ -644,8 +593,8 @@ document.getElementById('activateFriendCode').addEventListener('click', ()=>{
 });
 
 /* ===== Init ===== */
-renderHome(); buildPath(); renderShop(); updateTopbar();
-function renderHome(){ /* placeholder for future home data */ }
+renderHome(); buildPath(); renderShop(); updateSidebarStats(); setActive('home');
+function renderHome(){ /* could load personalized data later */ }
 </script>
 </body>
 </html>
