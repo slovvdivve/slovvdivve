@@ -3,63 +3,426 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>EdQuest — Главная</title>
+<title>EdQuest — ЕГЭ (v9.1.3 • zero baseline only)</title>
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 128 128'><rect width='128' height='128' rx='26' fill='%2307131c'/><circle cx='64' cy='64' r='44' fill='none' stroke='%230ef' stroke-width='10'/><text x='50%' y='57%' text-anchor='middle' font-size='48' fill='%230ef'>🎓</text></svg>">
-<link rel="stylesheet" href="css/style.css">
+<style>
+:root{
+  --brand-primary: #00E7F0;
+  --brand-accent:  #FF4AF2;
+  --brand-support: #C7FFE8;
+  --brand-warning: #FFC715;
+  --brand-danger:  #ff6b88;
+  --bg-0:#050a10; --glass:rgba(10,28,43,.52); --line:rgba(0,255,255,.14);
+  --text:#e8fbff; --muted:#9ad0df;
+  --radius:14px; --space-2:10px; --space-3:16px; --space-4:22px; --sidebar-w:300px; --content-max:1680px; --sticky:18px;
+}
+*{box-sizing:border-box}
+html,body{height:100%}
+body{margin:0;font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial;background:var(--bg-0);color:var(--text);-webkit-font-smoothing:antialiased;line-height:1.45;overflow-x:hidden}
+.bg{position:fixed;inset:0;z-index:-1;background:
+  radial-gradient(900px 600px at 10% -10%, rgba(0,240,255,.07), transparent 40%),
+  radial-gradient(900px 600px at 90% 110%, rgba(255,74,242,.06), transparent 40%);}
+.grid{position:absolute;inset:0;opacity:.35;background:
+  linear-gradient(rgba(0,255,255,.12) 1px, transparent 1px) 0 0/ 32px 32px,
+  linear-gradient(90deg, rgba(0,255,255,.12) 1px, transparent 1px) 0 0/ 32px 32px}
+@media (prefers-reduced-motion:no-preference){ .grid{animation:m 16s linear infinite}@keyframes m{to{transform:translateY(-32px)}} }
+
+/* layout */
+.layout{display:grid;grid-template-columns:var(--sidebar-w) 1fr;min-height:100dvh}
+.sidebar{position:sticky;top:0;height:100dvh;background:linear-gradient(180deg,rgba(7,19,28,.85),rgba(7,19,28,.75));border-right:1px solid var(--line);backdrop-filter:blur(10px);display:flex;flex-direction:column;padding:var(--space-4);gap:var(--space-3);z-index:6}
+.brand{display:flex;align-items:center;gap:12px;font-weight:900;font-size:20px;cursor:pointer;padding:6px 4px;border-radius:12px}
+.logo{width:30px;height:30px;border-radius:8px;background:
+  radial-gradient(circle at 30% 30%, var(--brand-primary), transparent 60%),
+  radial-gradient(circle at 70% 70%, var(--brand-accent), transparent 60%),
+  #09131d;border:1px solid var(--line);box-shadow:0 0 14px rgba(0,255,255,.35)}
+.nav{display:flex;flex-direction:column;gap:8px;overflow:auto;padding-right:4px}
+.nav .item{display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:12px;color:var(--muted);font-weight:900;cursor:pointer;border:1px solid transparent}
+.nav .item:hover{background:rgba(0,255,255,.05);border-color:var(--line)}
+.nav .item[aria-current="page"]{color:var(--text);background:rgba(0,255,255,.08);border-color:var(--line)}
+.nav .item svg{width:22px;height:22px;filter:drop-shadow(0 0 8px rgba(0,255,255,.3))}
+.side-stat{margin-top:auto;display:grid;gap:8px}
+.stat-chip{display:flex;align-items:center;gap:10px;padding:10px;border-radius:12px;background:var(--glass);border:1px solid var(--line)}
+.xp-bar{width:100%;height:10px;background:rgba(255,255,255,.05);border:1px solid var(--line);border-radius:999px;overflow:hidden}
+.xp-fill{height:100%;width:0%;background:linear-gradient(90deg,var(--brand-primary),var(--brand-accent))}
+.footer-mini{font-size:12px;color:var(--muted);text-align:center}
+
+@media (max-width:900px){
+  .layout{grid-template-columns:1fr}
+  .sidebar{display:none}
+}
+
+.content{padding:var(--space-4)}
+.container{width:min(var(--content-max),100%);margin:0 auto;display:grid;gap:var(--space-4);padding-inline:var(--space-4)}
+@media (max-width:900px){
+  .container{padding-inline:16px}
+  .panel{max-width:680px;margin-inline:auto;padding:18px}
+}
+
+.panel{background:var(--glass);border:1px solid var(--line);border-radius:var(--radius);padding:var(--space-4);backdrop-filter:blur(10px);position:relative;overflow:hidden;height:auto}
+.panel:before{content:"";position:absolute;inset:0;background:repeating-linear-gradient(0deg,rgba(255,255,255,.02),rgba(255,255,255,.02) 1px,transparent 2px);opacity:.4;mix-blend-mode:overlay;pointer-events:none}
+.title{font-size:clamp(20px,1.2rem + .5vw,30px);font-weight:900;margin:0 0 10px}
+.muted{color:var(--muted)}
+.btn{appearance:none;border:1px solid var(--line);border-radius:12px;padding:12px 14px;background:linear-gradient(180deg,#0b1c2c,#07131c);color:var(--text);font-weight:900;cursor:pointer}
+.btn.primary{background:linear-gradient(180deg,#0b2f3f,#0a1e2a);box-shadow:0 0 10px rgba(0,255,255,.25) inset}
+.gridgap{display:grid;gap:10px}
+
+/* play layout */
+.play-wrap{display:grid;grid-template-columns:2fr 1fr;gap:24px;align-items:start}
+@media (max-width:1200px){ .play-wrap{grid-template-columns:1fr} }
+.session-sticky{position:sticky;top:var(--sticky);align-self:start}
+
+/* answers */
+.choice{padding:14px;border-radius:12px;border:1px solid var(--line);background:linear-gradient(180deg,rgba(8,20,32,.8),rgba(6,16,25,.8));font-weight:800;cursor:pointer}
+.choice.correct{outline:2px solid var(--brand-support)} .choice.wrong{outline:2px solid var(--brand-danger)}
+.answer-input{width:100%;padding:14px 16px;border-radius:12px;background:rgba(6,16,25,.8);border:1px solid var(--line);color:var(--text)}
+
+/* bottom dock (mobile only) */
+.dock{position:sticky;bottom:0;z-index:7;background:rgba(7,19,28,.94);border-top:1px solid var(--line);backdrop-filter:blur(8px)}
+.dock .row{display:flex;gap:6px;padding:8px}
+.dock .item{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:6px;border-radius:10px;color:var(--muted);cursor:pointer;border:1px solid transparent}
+.dock .item[aria-current="page"]{color:var(--text);background:rgba(0,255,255,.08);border-color:var(--line)}
+.dock .item svg{width:22px;height:22px;display:block;margin-bottom:2px}
+@media (min-width:900px){ .dock{display:none} }
+
+/* charts */
+canvas.chart{width:100%;height:200px}
+@media (max-width:900px){
+  canvas.chart{height:120px}
+}
+</style>
 </head>
 <body>
 <div class="bg"><div class="grid"></div></div>
 
 <div class="layout">
-  <aside class="sidebar">
-    <a id="logoLink" href="index.html" class="brand"><div class="logo"></div> EdQuest</a>
-    <nav class="nav">
-      <a data-key="home" href="index.html">🏠 Главная</a>
-      <a data-key="game" href="game.html">▶️ Игра</a>
-      <a data-key="profile" href="profile.html">👤 Профиль</a>
-      <a data-key="store" href="store.html">🛍️ Магазин</a>
-      <a data-key="ref" href="referrals.html">🤝 Рефералы</a>
-      <a data-key="settings" href="settings.html">⚙️ Настройки</a>
-      <a data-key="help" href="help.html">❓ Помощь</a>
-    </nav>
+  <aside class="sidebar" aria-label="Главное меню">
+    <div class="brand" id="logo" role="button" tabindex="0"><div class="logo"></div> EdQuest</div>
+    <nav class="nav" id="sideNav"></nav>
     <div class="side-stat">
-      <div class="stat-chip">🎓 Уровень: <b id="uiLevel">1</b></div>
+      <div class="stat-chip" id="levelPill" tabindex="0">🎓 Уровень: <b id="uiLevel">1</b></div>
       <div class="xp-bar"><div class="xp-fill" id="uiXpFill"></div></div>
       <div class="stat-chip">🪙 Монеты: <b id="uiCoins">0</b></div>
       <div class="footer-mini">© EdQuest • v9.1.3</div>
     </div>
   </aside>
 
-  <main class="content">
-    <div class="container">
-      <section class="panel">
+  <div class="content" id="content">
+    <div class="container" id="views">
+      <section class="panel" data-view="home">
         <h1 class="title">Главная</h1>
-        <p class="muted">Начни тренировку или выбирай разделы.</p>
+        <p class="muted">Здесь старт и быстрые ссылки. Нажми «Начать игру» или выбери раздел слева/внизу.</p>
         <div class="gridgap">
           <button class="btn primary" id="startBtn">▶️ Начать игру</button>
-          <div class="gridgap">
-            <a class="btn" href="game.html">▶️ Начать: 📐 Математика</a>
-            <a class="btn" href="game.html">▶️ Начать: 🔤 Русский</a>
-            <a class="btn" href="game.html">▶️ Начать: 🧲 Физика</a>
+          <div class="gridgap" id="homePath"></div>
+        </div>
+      </section>
+
+      <section class="play-wrap" data-view="play">
+        <div class="panel">
+          <div style="display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap">
+            <h2 class="title" style="margin:0">🎯 Раунд <span id="roundNum">1</span></h2>
+            <div class="stat-chip">📚 Предмет <b id="subjectPill">—</b></div>
+          </div>
+          <div id="questionArea"></div>
+          <div style="display:flex;gap:8px;margin-top:12px;flex-wrap:wrap">
+            <button class="btn" id="skipBtn">⏭️ Пропустить</button>
+            <button class="btn" id="nextBtn" disabled>➡️ Дальше</button>
+            <button class="btn" id="finishBtn">🛑 Завершить сессию</button>
+          </div>
+        </div>
+        <div class="panel session-sticky">
+          <div class="title">📊 Сессия</div>
+          <div style="display:flex;gap:10px;flex-wrap:wrap">
+            <div class="stat-chip">🎯 Точность <b id="sessAcc">0%</b></div>
+            <div class="stat-chip">🔥 Серия <b id="sessStreak">0</b></div>
+            <div class="stat-chip">⏱ Время/задание <b id="sessTime">0.0с</b></div>
+            <div class="stat-chip">✅ Решено <b id="sessSolved">0</b></div>
+          </div>
+          <div class="gridgap" style="margin-top:8px">
+            <canvas class="chart" id="chartAcc"></canvas>
+            <canvas class="chart" id="chartTime"></canvas>
           </div>
         </div>
       </section>
+
+      <section class="panel" data-view="profile">
+        <div class="title">👤 Профиль</div>
+        <div style="display:flex;gap:10px;flex-wrap:wrap">
+          <div class="stat-chip">🎓 Уровень <b id="pfLevel">1</b></div>
+          <div class="stat-chip">⭐ Опыт <b id="pfXp">0 / 100</b></div>
+          <div class="stat-chip">🪙 Монеты <b id="pfCoins">0</b></div>
+          <div class="stat-chip">🎯 Точность <b id="pfAcc">0%</b></div>
+          <div class="stat-chip">🔥 Макс. серия <b id="pfMaxStreak">0</b></div>
+          <div class="stat-chip">✅ Решено <b id="pfSolved">0</b></div>
+        </div>
+        <div class="gridgap" style="margin-top:8px">
+          <canvas class="chart" id="chartSubjects"></canvas>
+        </div>
+      </section>
+
+      <section class="panel" data-view="shop">
+        <div class="title">🛍️ Магазин</div>
+        <p class="muted">Обменивай монеты на наборы стикеров.</p>
+        <div id="shopGrid" class="gridgap"></div>
+      </section>
+
+      <section class="panel" data-view="referrals">
+        <div class="title">🤝 Реферальная система</div>
+        <p>Твой код: <span class="stat-chip" id="refCode">—</span></p>
+        <div style="display:flex;gap:8px;flex-wrap:wrap">
+          <button class="btn" id="copyCodeBtn">📋 Скопировать</button>
+          <button class="btn" id="simulateInviteBtn">➕ Симулировать приглашение</button>
+        </div>
+        <div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:8px">
+          <div class="stat-chip">👥 Приглашено <b id="refCount">0</b></div>
+          <div class="stat-chip">⭐ XP бонус <b id="refXp">0</b></div>
+          <div class="stat-chip">🪙 Монеты <b id="refCoins">0</b></div>
+        </div>
+        <div class="title" style="margin-top:12px">🔑 Код друга</div>
+        <div style="display:flex;gap:8px;flex-wrap:wrap">
+          <input id="friendCode" class="answer-input" placeholder="Введи код друга — +10 монет">
+          <button class="btn" id="activateFriendCode">✅ Активировать</button>
+        </div>
+      </section>
+
+      <section class="panel" data-view="settings">
+        <div class="title">⚙️ Настройки</div>
+        <div style="display:flex;gap:8px;flex-wrap:wrap">
+          <button class="btn" data-scale="0.9">90%</button>
+          <button class="btn" data-scale="1.0">100%</button>
+          <button class="btn" data-scale="1.1">110%</button>
+          <button class="btn" data-scale="1.2">120%</button>
+          <button class="btn" id="testToast">🔔 Тост</button>
+        </div>
+      </section>
+
+      <section class="panel" data-view="help">
+        <div class="title">❓ Помощь</div>
+        <p class="muted">Шорткаты: G — главная, I — игра, P — профиль, S — магазин, R — рефералы.</p>
+      </section>
     </div>
-  </main>
+  </div>
 </div>
 
-<footer class="dock">
-  <div class="row">
-    <a data-key="home" href="index.html">🏠<span>Главная</span></a>
-    <a data-key="game" href="game.html">▶️<span>Игра</span></a>
-    <a data-key="profile" href="profile.html">👤<span>Профиль</span></a>
-    <a data-key="store" href="store.html">🛍️<span>Магазин</span></a>
-    <a data-key="ref" href="referrals.html">🤝<span>Рефералы</span></a>
-  </div>
+<footer class="dock" aria-label="Нижняя навигация">
+  <div class="row" id="dockNav"></div>
 </footer>
 
-<script src="js/main.js"></script>
-<script src="js/game.js"></script>
-<div id="toast" class="toast" style="display:none"></div>
+<div class="toast" id="toast" role="status" aria-live="polite" style="display:none"></div>
+
+<script>
+/* ===== Router + Nav builder ===== */
+const ROUTES=[
+  {id:'home',     label:'Главная',  icon:`<path d="M3 10.5 12 3l9 7.5v9a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1v-9Z" fill="none" stroke="currentColor" stroke-width="1.8"/>`},
+  {id:'play',     label:'Игра',     icon:`<path d="M8 6v12l10-6-10-6Z" fill="none" stroke="currentColor" stroke-width="1.8"/>`},
+  {id:'profile',  label:'Профиль',  icon:`<circle cx="12" cy="8" r="4" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M4 21a8 8 0 0 1 16 0" fill="none" stroke="currentColor" stroke-width="1.8"/>`},
+  {id:'shop',     label:'Магазин',  icon:`<path d="M3 7h18l-2 12H5L3 7Zm4-4h10l2 4H5l2-4Z" fill="none" stroke="currentColor" stroke-width="1.8"/>`},
+  {id:'referrals',label:'Рефералы', icon:`<path d="M8 12a4 4 0 1 1 0-8 4 4 0 0 1 0 8Zm8 0a4 4 0 1 1 0-8 4 4 0 0 1 0 8ZM3 21c0-3 3-5 5-5s5 2 5 5M11 21c0-3 3-5 5-5s5 2 5 5" fill="none" stroke="currentColor" stroke-width="1.8"/>`},
+  {id:'settings', label:'Настройки', icon:`<path d="M12 15a3 3 0 1 0 0-6 3 3 0 0 0 0 6Zm7.5-3a7.5 7.5 0 0 1-.1 1l2 1.5-2 3.5-2.3-.7a7.6 7.6 0 0 1-1.6 1l-.3 2.4H11l-.3-2.4a7.6 7.6 0 0 1-1.6-1l-2.3.7-2-3.5L6.8 13a7.5 7.5 0 0 1 0-2L3.8 9.5l2-3.5 2.3.7a7.6 7.6 0 0 1 1.6-1L10.7 3h2.6l.3 2.4a7.6 7.6 0 0 1 1.6 1l2.3-.7 2 3.5L19.4 11c.1.3.1.6.1 1Z" fill="none" stroke="currentColor" stroke-width="1.4"/>`},
+  {id:'help',     label:'Помощь',   icon:`<path d="M12 19h.01M12 17a5 5 0 1 0-5-5" fill="none" stroke="currentColor" stroke-width="1.8"/>`},
+];
+function buildNav(){
+  const side=document.getElementById('sideNav'); side.innerHTML='';
+  for(const r of ROUTES){
+    const el=document.createElement('div');
+    el.className='item'; el.setAttribute('data-view',r.id); el.innerHTML=`<svg viewBox="0 0 24 24" aria-hidden="true">${r.icon}</svg>${r.label}`;
+    el.addEventListener('click', ()=> setActive(r.id));
+    el.addEventListener('keydown', (e)=>{ if(e.key==='Enter'||e.key===' ') { e.preventDefault(); setActive(r.id); } });
+    el.tabIndex=0; side.appendChild(el);
+  }
+  const dock=document.getElementById('dockNav'); dock.innerHTML='';
+  for(const r of ROUTES.slice(0,5)){
+    const el=document.createElement('div');
+    el.className='item'; el.setAttribute('data-view',r.id);
+    el.innerHTML=`<svg viewBox="0 0 24 24" aria-hidden="true">${r.icon}</svg><span>${r.label}</span>`;
+    el.addEventListener('click', ()=> setActive(r.id));
+    el.tabIndex=0; dock.appendChild(el);
+  }
+}
+buildNav();
+
+/* ===== State & helpers ===== */
+const DB='edquest.v913'; const Save={load(){try{return JSON.parse(localStorage.getItem(DB))||null}catch(e){return null}},save(s){localStorage.setItem(DB,JSON.stringify(s))}};
+const init=()=>({profile:{level:1,xp:0,xpHist:[],coins:0,maxStreak:0,solved:0,acc:0},session:{round:0,correct:0,total:0,streak:0,times:[],accHist:[],xpGain:0,subjects:{math:0,russian:0,physics:0}},subjects:{math:{correct:0,total:0},russian:{correct:0,total:0},physics:{correct:0,total:0}},referrals:{code:code(),count:0,xp:0,coins:0,used:[]},shop:{owned:[]},ui:{scale:1}});
+let state=Save.load()||init();
+function code(){return Math.random().toString(36).slice(2,7).toUpperCase()}
+function toast(msg){const t=document.getElementById('toast');t.textContent=msg;t.style.display='block';clearTimeout(toast._t);toast._t=setTimeout(()=>t.style.display='none',2200)}
+
+/* ===== Router ===== */
+function setActive(view){
+  document.querySelectorAll('[data-view]').forEach(s=>{
+    if(s.closest('.container')) s.style.display=(s.dataset.view===view?'block':'none');
+  });
+  document.querySelectorAll('#sideNav .item').forEach(i=> i.setAttribute('aria-current', i.dataset.view===view ? 'page' : 'false'));
+  document.querySelectorAll('#dockNav .item').forEach(i=> i.setAttribute('aria-current', i.dataset.view===view ? 'page' : 'false'));
+  if(view==='profile') renderProfile();
+  if(view==='referrals') renderRef();
+  if(view==='home') { renderHome(); buildPath(); }
+  if(view==='shop') renderShop();
+  if(view==='play'){ refreshCharts(); }
+  document.getElementById('content').scrollTo({top:0,behavior:'smooth'});
+}
+document.getElementById('logo').addEventListener('click', ()=> setActive('home'));
+setActive('home');
+
+/* keyboard shortcuts */
+addEventListener('keydown',e=>{
+  if(e.target.matches('input,textarea')) return;
+  const k=e.key.toLowerCase(); const map={g:'home',i:'play',p:'profile',s:'shop',r:'referrals'};
+  if(map[k]) setActive(map[k]);
+});
+
+/* UI scale */
+document.querySelectorAll('[data-scale]').forEach(b=> b.addEventListener('click', ()=>{ const s=parseFloat(b.dataset.scale||'1'); state.ui.scale=s; document.documentElement.style.fontSize=(16*s)+'px'; Save.save(state); }));
+document.documentElement.style.fontSize=(16*(state.ui.scale||1))+'px';
+
+/* Sidebar stats */
+function updSide(){ document.getElementById('uiLevel').textContent=state.profile.level; document.getElementById('uiCoins').textContent=state.profile.coins;
+  const need=100+(state.profile.level-1)*50; const pct=Math.max(2,Math.round(state.profile.xp/need*100)); document.getElementById('uiXpFill').style.width=pct+'%'; }
+updSide();
+function addXP(n){ state.profile.xp+=n; state.session.xpGain+=n; while(state.profile.xp>=(100+(state.profile.level-1)*50)){ state.profile.xp-=(100+(state.profile.level-1)*50); state.profile.level++; addCoins(20); } updSide(); Save.save(state) }
+function addCoins(n){ state.profile.coins+=n; updSide(); Save.save(state) }
+
+/* Home */
+document.getElementById('startBtn').addEventListener('click',()=>{ setActive('play'); if(state.session.total===0) startSession() });
+function renderHome(){}
+function buildPath(){ const root=document.getElementById('homePath'); root.innerHTML=''; ['📐 Математика','🔤 Русский','🧲 Физика'].forEach((s,i)=>{
+  const d=document.createElement('button'); d.className='btn'; d.textContent='▶️ Начать: '+s; d.addEventListener('click',()=>setActive('play')); root.appendChild(d);
+});}
+
+/* Questions */
+const QUESTIONS=(function(){ const arr=[]; const push=(id,subject,type,text,extra)=>arr.push(Object.assign({id,subject,type,text,xp:10},extra||{}));
+for(let i=1;i<=30;i++){ const m=i%3; if(m===0) push('m'+i,'math','mcq',`(Математика) Найти производную: f(x)=${i+1}x^2`,{choices:['2x','2(x+1)','x^2','x'],answer:0});
+if(m===1) push('m'+i,'math','input',`(Математика) Реши: ${i+1}x - ${i} = 0. x = ?`,{answer:String(i/(i+1))});
+if(m===2) push('m'+i,'math','order','(Математика) Упорядочить по возрастанию',{items:['-2','0','3','1'],answer:['-2','0','1','3']});
+const r=i%3; if(r===0) push('r'+i,'russian','mcq','Найдите слово с проверяемой гласной в корне',{choices:['к...снуться','зар...сли','р...сток','ск...кать'],answer:0});
+if(r===1) push('r'+i,'russian','input','Вставь пропущенные буквы: пр…зидент',{answer:'президент'});
+if(r===2) push('r'+i,'russian','order','Собери правильное предложение',{items:['на','идёт','улице','дождь'],answer:['на','улице','идёт','дождь']});
+const p=i%3; if(p===0) push('p'+i,'physics','mcq','Единица силы в СИ:',{choices:['Джоуль','Паскаль','Ньютон','Ватт'],answer:2});
+if(p===1) push('p'+i,'physics','input','Скорость света ~ 3·10^? м/с. Введи показатель',{answer:'8'});
+if(p===2) push('p'+i,'physics','order','Расположи по возрастанию длины волны',{items:['фиолетовый','зелёный','красный'],answer:['фиолетовый','зелёный','красный']}); } return arr; })();
+let deck=[]; function buildDeck(){ deck=QUESTIONS.slice().sort(()=>Math.random()-.5) }
+
+const qArea=document.getElementById('questionArea'); let qStart=0;
+document.getElementById('skipBtn').addEventListener('click',nextQuestion);
+document.getElementById('nextBtn').addEventListener('click',nextQuestion);
+document.getElementById('finishBtn').addEventListener('click',finishSession);
+
+function startSession(){ state.session={round:0,correct:0,total:0,streak:0,times:[],accHist:[],xpGain:0,subjects:{math:0,russian:0,physics:0}}; buildDeck(); nextQuestion(); }
+function nextQuestion(){ document.getElementById('nextBtn').disabled=true; if(deck.length===0) buildDeck(); const q=deck.shift(); state.session.round++; renderQuestion(q); }
+function renderQuestion(q){
+  qStart=performance.now();
+  document.getElementById('roundNum').textContent=state.session.round;
+  document.getElementById('subjectPill').textContent=({math:'Математика',russian:'Русский',physics:'Физика'}[q.subject]);
+  qArea.innerHTML=''; const t=document.createElement('div'); t.className='title'; t.textContent=q.text; qArea.appendChild(t);
+  if(q.type==='mcq'){ const box=document.createElement('div'); box.className='gridgap';
+    q.choices.forEach((c,i)=>{ const b=document.createElement('div'); b.className='choice'; b.textContent='• '+c; b.addEventListener('click',()=>checkAnswer(q,i===q.answer,b,()=>b.classList.add(i===q.answer?'correct':'wrong'))); box.appendChild(b); });
+    qArea.appendChild(box);
+  } else if(q.type==='input'){ const input=document.createElement('input'); input.className='answer-input'; input.placeholder='Введи ответ…'; const b=document.createElement('button'); b.className='btn'; b.textContent='Ответить';
+    b.addEventListener('click',()=>{ const val=(input.value||'').trim().toLowerCase().replace(',', '.').replace(' ', ''); const ok=String(q.answer).toLowerCase()===val; checkAnswer(q,ok,input,()=> input.style.outline='2px solid '+(ok?'#9CF000':'#ff6b88')); });
+    input.addEventListener('keydown',e=>{ if(e.key==='Enter') b.click(); }); qArea.appendChild(input); qArea.appendChild(b);
+  } else { const list=document.createElement('ul'); list.style.listStyle='none'; list.style.padding='0'; list.className='gridgap';
+    q.items.slice().sort(()=>Math.random()-.5).forEach(txt=>{ const li=document.createElement('li'); li.className='choice'; li.textContent=txt; li.draggable=true; li.addEventListener('dragstart',()=>li.classList.add('dragging')); li.addEventListener('dragend',()=>li.classList.remove('dragging')); list.appendChild(li); });
+    list.addEventListener('dragover',e=>{ e.preventDefault(); const dragging=list.querySelector('.dragging'); if(!dragging) return; const after=[...list.querySelectorAll('.choice:not(.dragging)')].find(el=> e.clientY < el.getBoundingClientRect().top + el.offsetHeight/2); if(after) list.insertBefore(dragging,after); else list.appendChild(dragging); });
+    const b=document.createElement('button'); b.className='btn'; b.textContent='Проверить порядок'; b.addEventListener('click',()=>{ const arr=[...list.children].map(li=>li.textContent); const ok=JSON.stringify(arr)===JSON.stringify(q.answer); checkAnswer(q,ok,list,()=> list.style.outline='2px solid '+(ok?'#9CF000':'#ff6b88')); });
+    qArea.appendChild(list); qArea.appendChild(b);
+  }
+}
+function checkAnswer(q,ok,el,decorate){
+  decorate&&decorate(); const elapsed=(performance.now()-qStart)/1000;
+  state.session.total++; state.profile.solved++; state.session.times.push(elapsed);
+  if(ok){ state.session.correct++; state.session.streak++; addXP(q.xp||10); addCoins(1); state.session.subjects[q.subject]++; toast('Верно! +' + (q.xp||10) + ' XP'); } else { state.session.streak=0; }
+  state.profile.maxStreak=Math.max(state.profile.maxStreak,state.session.streak);
+  state.subjects[q.subject].total++; if(ok) state.subjects[q.subject].correct++;
+  const acc=state.session.correct/state.session.total; state.session.accHist.push(acc);
+  Save.save(state); renderSession(); document.getElementById('nextBtn').disabled=false;
+}
+function renderSession(){
+  const acc=state.session.total? Math.round(state.session.correct/state.session.total*100):0;
+  document.getElementById('sessAcc').textContent=acc+'%';
+  document.getElementById('sessStreak').textContent=state.session.streak;
+  document.getElementById('sessSolved').textContent=state.session.total;
+  const t=state.session.times.at(-1)||0; document.getElementById('sessTime').textContent=t.toFixed(1)+'с';
+  drawLine('chartAcc', state.session.accHist.map(v=>Math.round(v*100)), 'Точность %');
+  drawLine('chartTime', state.session.times, 'Время (с)');
+  updSide();
+}
+function finishSession(){ toast('Сессия завершена'); setActive('home'); }
+
+/* Profile */
+function renderProfile(){
+  const need=100+(state.profile.level-1)*50;
+  document.getElementById('pfLevel').textContent=state.profile.level;
+  document.getElementById('pfXp').textContent=Math.floor(state.profile.xp)+' / '+need;
+  document.getElementById('pfCoins').textContent=state.profile.coins;
+  const total=(state.subjects.math.total+state.subjects.russian.total+state.subjects.physics.total)||1;
+  const corr=(state.subjects.math.correct+state.subjects.russian.correct+state.subjects.physics.correct);
+  document.getElementById('pfAcc').textContent=Math.round(corr/total*100)+'%';
+  document.getElementById('pfMaxStreak').textContent=state.profile.maxStreak;
+  document.getElementById('pfSolved').textContent=state.profile.solved;
+  drawBars('chartSubjects', [['Математика', pct(state.subjects.math)], ['Русский', pct(state.subjects.russian)], ['Физика', pct(state.subjects.physics)]]);
+}
+function pct(x){return x.total?Math.round(x.correct/x.total*100):0}
+
+/* Shop */
+const STICKERS=[{id:'s1',name:'Учёба — Базовый',icon:'📘',price:80},{id:'s2',name:'Математика — Мемы',icon:'➗😄',price:120},{id:'s3',name:'Русский — Смайлы',icon:'📝✨',price:100}];
+function renderShop(){ const root=document.getElementById('shopGrid'); root.innerHTML=''; for(const s of STICKERS){ const owned=state.shop.owned?.includes(s.id);
+  const el=document.createElement('div'); el.className='stat-chip'; el.innerHTML=`<div style="font-size:28px">${s.icon}</div><div style="flex:1"><b>${s.name}</b><div class="muted">Цена: ${s.price} 🪙</div></div><button class="btn ${owned?'':'primary'}" ${owned?'disabled':''}>${owned?'✅ Владение':'Купить'}</button>`;
+  el.querySelector('button').addEventListener('click',()=>{ if(owned) return; if(state.profile.coins<s.price){ toast('Не хватает монет'); return; } state.profile.coins-=s.price; state.shop.owned.push(s.id); Save.save(state); renderShop(); updSide(); toast('Куплено!'); });
+  root.appendChild(el);
+}}
+
+/* Referrals */
+function renderRef(){ document.getElementById('refCode').textContent=state.referrals.code;
+  document.getElementById('refCount').textContent=state.referrals.count;
+  document.getElementById('refXp').textContent=state.referrals.xp;
+  document.getElementById('refCoins').textContent=state.referrals.coins; }
+document.getElementById('copyCodeBtn')?.addEventListener('click',async()=>{ await navigator.clipboard.writeText(state.referrals.code); toast('Код скопирован!'); });
+document.getElementById('simulateInviteBtn')?.addEventListener('click',()=>{ state.referrals.count++; state.referrals.xp+=50; state.referrals.coins+=20; addXP(50); addCoins(20); Save.save(state); renderRef(); toast('+1 приглашение'); });
+document.getElementById('activateFriendCode')?.addEventListener('click',()=>{ const v=(document.getElementById('friendCode').value||'').trim().toUpperCase(); if(!v) return; if(v===state.referrals.code) return toast('Нельзя свой код'); if(state.referrals.used?.includes(v)) return toast('Код уже активирован'); state.referrals.used.push(v); addCoins(10); Save.save(state); toast('Код активирован +10'); });
+
+/* Charts — LIGHT colors + zero baseline when empty */
+function drawLine(id,arr,label){
+  const c=document.getElementById(id); if(!c) return; const x=c.getContext('2d');
+  c.width=c.clientWidth*devicePixelRatio; c.height=c.clientHeight*devicePixelRatio; x.clearRect(0,0,c.width,c.height);
+  const pad=10*devicePixelRatio, w=c.width-pad*2, h=c.height-pad*2;
+  x.fillStyle='rgba(230,250,255,.9)'; x.font=(12*devicePixelRatio)+'px system-ui'; x.fillText(label, pad, 14*devicePixelRatio);
+
+  // Рисуем горизонтальную линию на нуле, если точек меньше 2
+  if(arr.length < 2){
+    const Y = pad + h; // ноль — по нижнему краю графика
+    x.beginPath(); x.moveTo(pad, Y); x.lineTo(pad + w, Y);
+    x.strokeStyle='#B9F3FF'; x.lineWidth=3*devicePixelRatio; x.shadowColor='rgba(185,243,255,.45)'; x.shadowBlur=6*devicePixelRatio; x.stroke();
+    return;
+  }
+
+  const max=Math.max(...arr,100), min=Math.min(...arr,0);
+  x.beginPath();
+  arr.forEach((v,i)=>{
+    const X=pad+i/(arr.length-1)*w;
+    const Y=pad+(1-(v-min)/(max-min))*h;
+    if(i===0) x.moveTo(X,Y); else x.lineTo(X,Y);
+  });
+  x.strokeStyle='#B9F3FF'; x.lineWidth=3*devicePixelRatio; x.shadowColor='rgba(185,243,255,.45)'; x.shadowBlur=6*devicePixelRatio; x.stroke();
+}
+function drawBars(id,pairs){
+  const c=document.getElementById(id); if(!c) return; const x=c.getContext('2d');
+  c.width=c.clientWidth*devicePixelRatio; c.height=c.clientHeight*devicePixelRatio; x.clearRect(0,0,c.width,c.height);
+  const pad=16*devicePixelRatio,bw=(c.width-pad*2)/(pairs.length*1.6),maxVal=Math.max(1,...pairs.map(p=>p[1]));
+  pairs.forEach((p,i)=>{
+    const X=pad+i*bw*1.6; const H=(c.height-pad*2)*(p[1]/maxVal);
+    x.fillStyle='#C7FFE8'; x.fillRect(X,c.height-pad-H,bw,H);
+    x.fillStyle='rgba(230,250,255,.85)'; x.font=(12*devicePixelRatio)+'px system-ui'; x.fillText(p[0],X,c.height-4*devicePixelRatio);
+  });
+}
+function refreshCharts(){ if(document.querySelector('[data-view="play"]').style.display==='block') renderSession(); if(document.querySelector('[data-view="profile"]').style.display==='block') renderProfile(); }
+new ResizeObserver(refreshCharts).observe(document.getElementById('views'));
+
+/* Misc */
+document.getElementById('testToast')?.addEventListener('click',()=>toast('Это уведомление'));
+
+/* Init */
+renderHome(); buildPath(); renderShop(); updSide();
+</script>
 </body>
 </html>
