@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Hook Arena — GH Pages Multiplayer (r9)</title>
+  <title>Hook Arena — GH Pages Multiplayer (r10)</title>
   <style>
     html, body { height: 100%; margin: 0; background:#0b0f17; }
     #root { height: 100%; display:grid; place-items:center; }
@@ -11,18 +11,18 @@
     .hint{position:fixed;left:50%;transform:translateX(-50%);top:10px;color:#e2e8f0;font:14px/1.4 system-ui,sans-serif;background:#0f172a;border:1px solid #334155;border-radius:10px;padding:8px 12px}
     .hud{position:fixed;left:10px;top:10px;color:#e5e7eb;font:14px/1.3 system-ui,sans-serif;opacity:.9}
     .menuBtn{position:fixed;right:12px;top:12px;background:#1f2937;border:1px solid #334155;color:#e5e7eb;border-radius:8px;padding:8px 12px;cursor:pointer}
-    .menuPanel{position:fixed;right:12px;top:56px;background:#0b1220;border:1px solid #334155;color:#e5e7eb;border-radius:10px;min-width:260px;display:none}
+    .menuPanel{position:fixed;right:12px;top:56px;background:#0b1220;border:1px solid #334155;color:#e5e7eb;border-radius:10px;min-width:260px;display:none;z-index:10}
     .tabs{display:flex;border-bottom:1px solid #334155}
     .tab{flex:1;padding:8px 10px;text-align:center;cursor:pointer}
     .tab.active{background:#111827}
     .tabBody{padding:10px 12px;font:14px/1.4 system-ui,sans-serif}
-    .skillbar{position:fixed;bottom:10px;left:50%;transform:translateX(-50%);display:flex;gap:8px}
+    .skillbar{position:fixed;bottom:10px;left:50%;transform:translateX(-50%);display:flex;gap:8px; z-index:5}
     .skill{width:48px;height:48px;background:#1f2937;border:2px solid #334155;border-radius:8px;position:relative;overflow:hidden}
     .skill img{width:100%;height:100%;object-fit:cover;opacity:1}
     .skill.cd img{opacity:0.4}
     .skill .cdtimer{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;color:#fff;font-weight:bold;font-size:16px;text-shadow:0 0 4px #000}
-    .pickup{position:fixed;left:50%;top:54px;transform:translateX(-50%);background:#0f172a; color:#e5e7eb; border:1px solid #334155; border-radius:10px; padding:6px 10px; font:14px/1.3 system-ui,sans-serif; display:none}
-    .modal{position:fixed;inset:0;display:none;align-items:center;justify-content:center;background:rgba(0,0,0,0.35)}
+    .pickup{position:fixed;left:50%;top:54px;transform:translateX(-50%);background:#0f172a; color:#e5e7eb; border:1px solid #334155; border-radius:10px; padding:6px 10px; font:14px/1.3 system-ui,sans-serif; display:none; z-index:6}
+    .modal{position:fixed;inset:0;display:none;align-items:center;justify-content:center;background:rgba(0,0,0,0.35); z-index:20}
     .modal .card{background:#0b1220;border:1px solid #334155;color:#e5e7eb;border-radius:14px;padding:18px 20px;min-width:320px;max-width:90vw;text-align:center;box-shadow:0 10px 30px rgba(0,0,0,.5)}
     .modal .title{font:22px/1.3 system-ui,sans-serif;margin-bottom:10px}
     .modal .msg{font:14px/1.5 system-ui,sans-serif;opacity:.9;margin-bottom:16px}
@@ -30,19 +30,18 @@
     .btn{background:#1f2937;border:1px solid #334155;color:#e5e7eb;border-radius:10px;padding:8px 14px;cursor:pointer}
     .btn.primary{background:#2563eb;border-color:#1d4ed8}
     /* Multiplayer panels */
-    .mpPanel{position:fixed;left:50%;top:50%;transform:translate(-50%,-50%);background:#0b1220;border:1px solid #334155;border-radius:12px;padding:16px 18px;color:#e5e7eb;min-width:320px;display:none}
+    .mpPanel{position:fixed;left:50%;top:50%;transform:translate(-50%,-50%);background:#0b1220;border:1px solid #334155;border-radius:12px;padding:16px 18px;color:#e5e7eb;min-width:320px;display:none; z-index:15}
     .mpTitle{font:18px/1.3 system-ui,sans-serif;margin-bottom:10px}
     .mpRow{margin:8px 0}
-    .inp{width:100%;padding:8px 10px;border:1px solid #334155;border-radius:8px;background:#0f172a;color:#e5e7eb;font-size:18px;letter-spacing:2px;text-align:center}
+    .inp{width:100%;padding:10px 12px;border:1px solid #334155;border-radius:8px;background:#0f172a;color:#e5e7eb;font-size:18px;letter-spacing:2px;text-align:center}
     .badge{display:inline-block;padding:4px 8px;border:1px solid #334155;border-radius:8px;background:#0f172a;margin-left:8px}
     .mpList{border:1px dashed #334155; border-radius:8px; padding:8px 10px; font:14px system-ui,sans-serif; min-height:60px; white-space:pre-line}
-    .kbd{display:inline-block;background:#111827;border:1px solid #334155;border-radius:6px;padding:2px 6px;margin-left:6px;color:#e5e7eb}
   </style>
   <script src="https://unpkg.com/peerjs@1.5.2/dist/peerjs.min.js"></script>
 </head>
 <body>
   <div id="root"><canvas id="game" width="960" height="540" tabindex="0"></canvas></div>
-  <div class="hint">WASD/стрелки — движение • ЛКМ — хук (через 3.5с) • M — меню • R — рестарт • Мультиплеер работает на HTTPS (GitHub Pages)</div>
+  <div class="hint">WASD/стрелки — движение • ЛКМ — хук (через 3.5с) • M — меню • R — рестарт • Мультиплеер на HTTPS (GitHub Pages)</div>
   <div id="pickup" class="pickup"></div>
   <button id="btnMenu" class="menuBtn">Главное меню</button>
   <div id="menuPanel" class="menuPanel">
@@ -61,7 +60,19 @@
   </div>
   <div class="hud" id="hud"></div>
 
-  <!-- MP panels -->
+  <!-- Victory/Defeat modal -->
+  <div id="modal" class="modal">
+    <div class="card">
+      <div class="title" id="modalTitle">Победа!</div>
+      <div class="msg" id="modalMsg">Противник утонул. Красиво сыграно.</div>
+      <div class="actions">
+        <button class="btn primary" id="btnPlayAgain">Сыграть ещё</button>
+        <button class="btn" id="btnGoMain">На главную</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Multiplayer panels -->
   <div id="mpMenu" class="mpPanel">
     <div class="mpTitle">Мультиплеер</div>
     <div class="actions">
@@ -69,7 +80,7 @@
       <button class="btn" id="btnJoin">Присоединиться</button>
       <button class="btn" id="btnCloseMp">Назад</button>
     </div>
-    <div class="mpRow" style="opacity:.8">Поделитесь кодом с другом или введите код друга, чтобы подключиться.</div>
+    <div class="mpRow" style="opacity:.8">Сгенерируй код и отправь другу или введи код, чтобы подключиться.</div>
   </div>
 
   <div id="mpHost" class="mpPanel">
@@ -88,13 +99,12 @@
     <div class="mpTitle">Присоединиться как <b>user</b></div>
     <div class="mpRow">
       <input id="joinCode" class="inp" placeholder="Код комнаты (5 цифр)" maxlength="5"
-             type="tel" inputmode="numeric" pattern="\\d{5}" autocomplete="one-time-code" />
+             type="tel" inputmode="numeric" pattern="\\d{5}" autocomplete="one-time-code" enterkeyhint="go" />
     </div>
     <div class="actions">
       <button class="btn primary" id="btnJoinGo">Присоединиться</button>
       <button class="btn" id="btnJoinBack">Назад</button>
     </div>
-    <div class="mpRow" style="opacity:.8">Подсказка: на мобилках откроется цифровая клавиатура. На десктопе можно вводить цифры с клавиатуры.</div>
     <div id="joinStatus" class="mpRow" style="opacity:.9"></div>
   </div>
 
@@ -104,9 +114,6 @@
     const MID=W/2, RIVER_FR=0.40, RIVER_W=Math.floor(W*RIVER_FR), RIVER_HALF=Math.floor(RIVER_W/2);
     const LEFT_BANK_X=MID-RIVER_HALF, RIGHT_BANK_X=MID+RIVER_HALF;
     const PLAYER_SPEED=260, HOOK_SPEED=1100, PULL_SPEED=380, BLOCK_TIME=3500;
-    const ENEMY_SIDE_LEFT = LEFT_BANK_X, ENEMY_SIDE_RIGHT = W - RIGHT_BANK_X;
-    const BASE_RANGE_PLAYER = RIVER_W + ENEMY_SIDE_LEFT/3;
-    const BASE_RANGE_BOT    = RIVER_W + ENEMY_SIDE_RIGHT/3;
     const FOG_ALPHA_HIDDEN=0.9, FOG_ALPHA_SEEN=0.15;
     const MP_ENABLED = (location.protocol==='https:' || location.hostname==='localhost');
 
@@ -121,8 +128,10 @@
     const tabMain=document.getElementById('tabMain'), tabProfile=document.getElementById('tabProfile');
     const tabs=[...panel.querySelectorAll('.tab')];
     const pickupEl=document.getElementById('pickup');
+    const modal=document.getElementById('modal'), modalTitle=document.getElementById('modalTitle'), modalMsg=document.getElementById('modalMsg');
+    const btnPlayAgain=document.getElementById('btnPlayAgain'), btnGoMain=document.getElementById('btnGoMain');
 
-    // MP DOM
+    // Multiplayer DOM
     const mpMenu=document.getElementById('mpMenu');
     const mpHost=document.getElementById('mpHost');
     const mpJoin=document.getElementById('mpJoin');
@@ -151,7 +160,7 @@
       tabMain.appendChild(buildMainButtons());
       tabMain.style.display=(name==='main')?'block':'none';
       tabProfile.style.display=(name==='profile')?'block':'none';
-      tabProfile.textContent=`Профиль: побед ${stats.wins}, поражений ${stats.loses}, глоб. сложность ${globalLevel}`;
+      tabProfile.textContent=`Побед: ${stats.wins}, Поражений: ${stats.loses}`;
     });
 
     function buildMainButtons(){
@@ -160,10 +169,7 @@
       const btnMP=document.createElement('button'); btnMP.className='btn'; btnMP.style.marginLeft='8px'; btnMP.textContent='Мультиплеер';
       btnPlay.onclick=()=>{ startMatchSP(); };
       btnMP.onclick=()=>{
-        if(!MP_ENABLED || !window.Peer){
-          alert('Мультиплеер работает только на GitHub Pages (HTTPS). Сейчас доступен офлайн-режим.');
-          return;
-        }
+        if(!MP_ENABLED || !window.Peer){ alert('Мультиплеер работает на GitHub Pages (HTTPS).'); return; }
         openMpMenu();
       };
       wrap.appendChild(btnPlay); wrap.appendChild(btnMP);
@@ -173,59 +179,428 @@
     function openMpMenu(){ mpMenu.style.display='block'; mpHost.style.display='none'; mpJoin.style.display='none'; }
     function closeMpPanels(){ mpMenu.style.display='none'; mpHost.style.display='none'; mpJoin.style.display='none'; }
     btnCloseMp.onclick=closeMpPanels;
+
     btnHost.onclick=()=>{ createLobby(); };
     btnJoin.onclick=()=>{
       mpMenu.style.display='none'; mpJoin.style.display='block'; joinStatus.textContent='';
-      // Trigger soft keyboard on mobile
-      setTimeout(()=>{
-        joinCodeEl.focus({preventScroll:true});
-        joinCodeEl.select && joinCodeEl.select();
-      }, 50);
+      // Focus instantly (keeps iOS keyboard)
+      joinCodeEl.value=''; joinCodeEl.focus({preventScroll:true}); joinCodeEl.select && joinCodeEl.select();
     };
     btnHostBack.onclick=()=>{ closeMpPanels(); };
     btnJoinBack.onclick=()=>{ openMpMenu(); };
 
-    // Numeric-only guard
-    joinCodeEl.addEventListener('input', ()=>{
-      joinCodeEl.value = (joinCodeEl.value||'').replace(/\D+/g,'').slice(0,5);
-    });
-    joinCodeEl.addEventListener('keydown', (e)=>{
-      if(e.key==='Enter'){ btnJoinGo.click(); }
-    });
+    // Numeric filter + Enter shortcut
+    joinCodeEl.addEventListener('input', ()=>{ joinCodeEl.value=(joinCodeEl.value||'').replace(/\D+/g,'').slice(0,5); });
+    joinCodeEl.addEventListener('keydown', e=>{ if(e.key==='Enter'){ btnJoinGo.click(); } });
 
-    // ======= (Game/MP engine trimmed for brevity) =======
-    // For this r9 diff, the only change vs r8 is the join UX. The full engine is identical to r8.
-    // To keep this answer compact, I'll include a minimal SP stub so you can run file locally.
+    // Modal buttons
+    btnPlayAgain.onclick=()=>{ if(screen==='over'){ startMatchSP(); hideModal(); } };
+    btnGoMain.onclick=()=>{ hideModal(); screen='menu'; };
 
-    function startMatchSP(){
-      // simple placeholder to prove file runs; in your repo keep the full r8 engine file.
-      alert('Singleplayer тест-заглушка в r9: основной игровой код без изменений с r8. В репо используйте r8/r10 с полным движком.');
-      closeMpPanels();
+    function showModal(title, msg){ modalTitle.textContent=title; modalMsg.textContent=msg; modal.style.display='flex'; }
+    function hideModal(){ modal.style.display='none'; }
+
+    // ===== Core engine (SP + MP) =====
+    const keys={};
+    function onKey(e,down){
+      const code=e.code; keys[code]=down;
+      if(['ArrowUp','ArrowDown','ArrowLeft','ArrowRight','Space'].includes(code)) e.preventDefault();
+      if(down && (code==='KeyM')){ panel.style.display=(panel.style.display==='block'?'none':'block') }
+      if(down && (code==='KeyR')){ if(screen==='game') startMatchSP(); }
+    }
+    window.addEventListener('keydown',e=>onKey(e,true), {passive:false});
+    window.addEventListener('keyup',e=>onKey(e,false));
+    document.addEventListener('keydown',e=>onKey(e,true), {passive:false});
+    document.addEventListener('keyup',e=>onKey(e,false));
+
+    const pointer={x:W/2,y:H/2};
+    canvas.addEventListener('mousemove',e=>{ const r=canvas.getBoundingClientRect(); pointer.x=e.clientX-r.left; pointer.y=e.clientY-r.top; });
+
+    function createEngine(params){
+      const {mode, net} = params || {};
+      const withAI = (mode==='sp');
+      const isHost = (mode==='mpHost');
+      const isClient = (mode==='mpClient');
+
+      const LEFT_LIMIT = 12, RIGHT_LIMIT = W-12;
+      const BASE_RANGE_PLAYER = Math.floor((W*RIVER_FR) + (LEFT_BANK_X)/3);  // right (admin)
+      const BASE_RANGE_LEFT   = Math.floor((W*RIVER_FR) + (W-RIGHT_BANK_X)/3); // left (user)
+
+      const right={x:RIGHT_BANK_X+100,y:H/2,vx:0,vy:0,r:12,longHookUntil:0}; // admin / you
+      const left ={x:LEFT_BANK_X-100 ,y:H/2,vx:0,vy:0,r:12,longHookUntil:0}; // opponent (bot or user)
+      const hook=(owner,victim)=>({state:'idle',x:-1000,y:-1000,vx:0,vy:0,startX:0,startY:0,carry:null,owner,victim});
+      const rightHook=hook(right,left), leftHook=hook(left,right);
+      const runes=[];
+      let lastReveal=performance.now(), lastPower=performance.now();
+      const revealDelay=4000, powerDelay=8000;
+      let riverOff=0, visionRightUntil=0, visionLeftUntil=0;
+      const startAt=performance.now();
+      let cdRightUntil=0, cdLeftUntil=0;
+      let botCD=900, botMoveTimer=0, botWaypoint=null;
+      let pickupUntil=0;
+
+      function randInt(a,b){ return (Math.random()*(b-a)+a)|0 }
+      function canThrowRight(){ return performance.now()-startAt>=BLOCK_TIME && performance.now()>=cdRightUntil && rightHook.state==='idle' }
+      function canThrowLeft(){  return performance.now()-startAt>=BLOCK_TIME && performance.now()>=cdLeftUntil  && leftHook.state==='idle' }
+      function setRightCD(ms){ cdRightUntil=performance.now()+ms; hookSkillEl.classList.add('cd'); hookSkillTimerEl.style.display='flex' }
+      function updateCooldownUI(){ if(performance.now()<cdRightUntil){ hookSkillTimerEl.textContent=Math.max(0,Math.ceil((cdRightUntil-performance.now())/1000)); } else { hookSkillEl.classList.remove('cd'); hookSkillTimerEl.style.display='none' } }
+
+      function throwHook(h, tx, ty){ if(h.state!=='idle') return; h.state='flying'; h.carry=null; h.x=h.owner.x; h.y=h.owner.y; h.startX=h.x; h.startY=h.y; const ang=Math.atan2(ty-h.y, tx-h.x); h.vx=Math.cos(ang)*HOOK_SPEED; h.vy=Math.sin(ang)*HOOK_SPEED; }
+      const startReturn=h=>{ if(h.state!=='idle') h.state='returning' };
+      const resetHook=h=>{ h.state='idle'; h.x=-1000; h.y=-1000; h.vx=h.vy=0; h.carry=null };
+      const victimTouchesWater=v=> v.x>=LEFT_BANK_X && v.x<=RIGHT_BANK_X;
+      const showToast=text=>{ pickupEl.textContent=text; pickupEl.style.display='block'; pickupUntil=performance.now()+2000 };
+      function applyRune(owner, r){
+        if(r.type==='reveal'){ if(owner===right) visionLeftUntil=performance.now()+3000; else visionRightUntil=performance.now()+3000; }
+        else if(r.type==='power'){ owner.longHookUntil=performance.now()+5000 }
+        showToast(`${owner===right?'Ты':'Оппонент'} взял ${r.type==='reveal'?'жёлтую руну':'красную руну'}`);
+      }
+
+      // Input handling
+      canvas.onmousedown = ()=>{
+        if(isClient){ net?.send({t:'click', x:pointer.x, y:pointer.y}); return; }
+        if(canThrowRight()){ throwHook(rightHook, pointer.x, pointer.y); setRightCD(1200); if(isHost) net?.broadcast({t:'clickEcho', side:'right', x:pointer.x, y:pointer.y}); }
+      };
+
+      // Host can apply remote left click
+      function hostThrowLeft(x,y){ if(canThrowLeft()){ throwHook(leftHook, x, y); cdLeftUntil=performance.now()+1200; if(isHost) net?.broadcast({t:'clickEcho', side:'left', x, y}); } }
+
+      function aiTick(dt){
+        // only in SP: left is bot
+        const lvl=Math.max(1, Math.min(5, globalLevel));
+        const dodgeChance=[0,.35,.50,.65,.78,.88][lvl];
+        const prediction=[0,.10,.18,.26,.34,.42][lvl];
+        const jitter=[0,40,30,24,18,12][lvl];
+        const cdMin=[0,900,800,700,600,520][lvl];
+        const cdMax=[0,1400,1200,1100,1000,920][lvl];
+
+        const leftHasVision = performance.now() < visionRightUntil;
+        const dToRight = Math.hypot(right.x-left.x, right.y-left.y);
+        const needLong = (performance.now()>left.longHookUntil) && (dToRight > BASE_RANGE_LEFT - 5);
+
+        const nearest = (type)=>{
+          let best=null, bestD=1e9;
+          for(const r of runes){ if(r.type!==type) continue; const d=Math.hypot(r.x-left.x, r.y-left.y); if(d<bestD){ best=r; bestD=d } }
+          return {obj:best, dist:bestD};
+        };
+        const pow = nearest('power');
+        const rev = nearest('reveal');
+
+        let target = null;
+        if(needLong && pow.obj) target=pow.obj;
+        else if(!leftHasVision && rev.obj) target=rev.obj;
+        if(!target){
+          if(!botWaypoint || botWaypoint.ttl<=0 || Math.hypot(botWaypoint.x-left.x, botWaypoint.y-left.y)<10){
+            const x = randInt(24, LEFT_BANK_X-24);
+            const y = randInt(40, H-40);
+            botWaypoint = {x,y, ttl: randInt(800,1600)};
+          } else { botWaypoint.ttl -= dt*1000; }
+          target = botWaypoint;
+        }
+
+        const speed = 140;
+        if(target){
+          const ang = Math.atan2(target.y-left.y, target.x-left.x);
+          left.vx = Math.cos(ang)*speed;
+          left.vy = Math.sin(ang)*speed;
+          if(left.x<LEFT_LIMIT && left.vx<0) left.vx=0;
+          if(left.x>LEFT_BANK_X && left.vx>0) left.vx=0;
+        }
+
+        if(rightHook.state==='flying'){
+          const toLeftX=left.x-rightHook.x, toLeftY=left.y-rightHook.y;
+          const approaching=(toLeftX*rightHook.vx + toLeftY*rightHook.vy) > 0;
+          const close=Math.hypot(toLeftX,toLeftY) < 360;
+          if(approaching && close && Math.random()<dodgeChance){
+            const len=Math.hypot(rightHook.vx,rightHook.vy)||1, px=-rightHook.vy/len, py=rightHook.vx/len;
+            left.vx=px*400; left.vy=py*400; setTimeout(()=>{ left.vx=0; left.vy=0 }, 200);
+          }
+        }
+
+        botCD-=dt*1000;
+        if(leftHook.state==='idle' && botCD<=0){
+          if(needLong && pow.obj && pow.dist<=BASE_RANGE_LEFT){ throwHook(leftHook, pow.obj.x, pow.obj.y); botCD=randInt(cdMin, cdMax); return; }
+          if(!leftHasVision && rev.obj && rev.dist<=BASE_RANGE_LEFT){ throwHook(leftHook, rev.obj.x, rev.obj.y); botCD=randInt(cdMin, cdMax); return; }
+          if(leftHasVision){
+            if(dToRight <= BASE_RANGE_LEFT || performance.now() < left.longHookUntil){
+              const tx=right.x + right.vx*prediction + (Math.random()-0.5)*2*jitter;
+              const ty=right.y + right.vy*prediction + (Math.random()-0.5)*2*jitter;
+              throwHook(leftHook, tx, ty);
+              botCD=randInt(cdMin, cdMax); return;
+            }
+          }
+          botCD = randInt(400,900);
+        }
+      }
+
+      function collectInputs(){
+        return {
+          keys: {
+            KeyA: !!keys['KeyA'], KeyD: !!keys['KeyD'], KeyW: !!keys['KeyW'], KeyS: !!keys['KeyS'],
+            ArrowLeft: !!keys['ArrowLeft'], ArrowRight: !!keys['ArrowRight'], ArrowUp: !!keys['ArrowUp'], ArrowDown: !!keys['ArrowDown']
+          },
+          pointer: { x: pointer.x, y: pointer.y }
+        };
+      }
+
+      // Client input sender interval
+      let inputTimer=null;
+      if(isClient && net){
+        inputTimer = setInterval(()=>{ net.send({t:'input', data: collectInputs()}) }, 50);
+      }
+
+      function cleanup(){ if(inputTimer){ clearInterval(inputTimer); inputTimer=null; } }
+
+      function update(dt){
+        hud.textContent = (withAI?'SP':'MP') + (isHost?' Host':' Client');
+        riverOff=(riverOff + 60*dt)%16;
+        if(performance.now()>pickupUntil){ pickupEl.style.display='none'; }
+
+        if(!isClient){
+          // Right local control
+          let vx=0,vy=0; const k=keys;
+          if(k['KeyA']||k['ArrowLeft']) vx-=PLAYER_SPEED;
+          if(k['KeyD']||k['ArrowRight']) vx+=PLAYER_SPEED;
+          if(k['KeyW']||k['ArrowUp']) vy-=PLAYER_SPEED;
+          if(k['KeyS']||k['ArrowDown']) vy+=PLAYER_SPEED;
+          right.vx=vx; right.vy=vy;
+        }
+        if(isHost && net && net.lastInput){
+          const k=net.lastInput.keys||{}; let vx=0,vy=0;
+          if(k.KeyA||k.ArrowLeft) vx-=PLAYER_SPEED;
+          if(k.KeyD||k.ArrowRight) vx+=PLAYER_SPEED;
+          if(k.KeyW||k.ArrowUp) vy-=PLAYER_SPEED;
+          if(k.KeyS||k.ArrowDown) vy+=PLAYER_SPEED;
+          left.vx=vx; left.vy=vy;
+          // pointer not used for movement here
+        }
+
+        // Bounds (unless pulled)
+        const pulledRight = (leftHook.state==='pulling' && leftHook.victim===right) || (rightHook.state==='pulling' && rightHook.victim===right);
+        const pulledLeft  = (leftHook.state==='pulling' && leftHook.victim===left)  || (rightHook.state==='pulling' && rightHook.victim===left);
+
+        if(!pulledRight){ right.x=Math.max(RIGHT_BANK_X, Math.min(RIGHT_LIMIT, right.x+right.vx*dt)); right.y=Math.max(12, Math.min(H-12, right.y+right.vy*dt)); } else { right.x+=right.vx*dt; right.y+=right.vy*dt; }
+        if(!pulledLeft){  left.x=Math.max(LEFT_LIMIT, Math.min(LEFT_BANK_X, left.x+left.vx*dt)); left.y=Math.max(12, Math.min(H-12, left.y+left.vy*dt)); } else { left.x+=left.vx*dt; left.y+=left.vy*dt; }
+
+        const now=performance.now();
+        if(now-lastReveal>revealDelay){ runes.push({x:randInt(LEFT_BANK_X+10,RIGHT_BANK_X-10), y:-10, type:'reveal', speed:PLAYER_SPEED*0.5}); lastReveal=now }
+        if(now-lastPower>powerDelay){ runes.push({x:randInt(LEFT_BANK_X+10,RIGHT_BANK_X-10), y:-10, type:'power', speed:PLAYER_SPEED*0.5}); lastPower=now }
+
+        for(let i=runes.length-1;i>=0;i--){
+          const r=runes[i]; r.y+=r.speed*dt;
+          if(r.y>H+20){ runes.splice(i,1); continue }
+          if(Math.hypot(right.x-r.x, right.y-r.y) < 20){ applyRune(right,r); runes.splice(i,1); continue }
+          if(Math.hypot(left.x-r.x, left.y-r.y) < 20){ applyRune(left,r); runes.splice(i,1); continue }
+        }
+
+        [rightHook, leftHook].forEach(h=>{
+          if(h.state==='flying'){
+            h.x+=h.vx*dt; h.y+=h.vy*dt;
+            const baseRange = (h.owner===right) ? BASE_RANGE_PLAYER : BASE_RANGE_LEFT;
+            const maxR = ((h.owner.longHookUntil||0) > now) ? W : baseRange;
+            const traveled = Math.hypot(h.x-h.startX, h.y-h.startY);
+            if(traveled>maxR) startReturn(h);
+            if(Math.hypot(h.x-h.victim.x, h.y-h.victim.y) < 14){ h.state='pulling'; h.vx=h.vy=0; h.x=h.victim.x; h.y=h.victim.y }
+            for(let i=0;i<runes.length;i++){ const r=runes[i]; if(Math.hypot(h.x-r.x, h.y-r.y) < 12){ h.state='returning'; h.carry=r; runes.splice(i,1); break } }
+          } else if(h.state==='returning'){
+            const ang=Math.atan2(h.owner.y-h.y, h.owner.x-h.x);
+            h.vx=Math.cos(ang)*HOOK_SPEED; h.vy=Math.sin(ang)*HOOK_SPEED;
+            h.x+=h.vx*dt; h.y+=h.vy*dt;
+            if(h.carry){ h.carry.x=h.x; h.carry.y=h.y }
+            if(Math.hypot(h.owner.x-h.x, h.owner.y-h.y) < 16){
+              if(h.carry){ applyRune(h.owner,h.carry); h.carry=null; }
+              resetHook(h);
+            }
+          } else if(h.state==='pulling'){
+            const ang=Math.atan2(h.owner.y-h.victim.y, h.owner.x-h.victim.x);
+            h.victim.vx=Math.cos(ang)*PULL_SPEED; h.victim.vy=Math.sin(ang)*PULL_SPEED;
+            if(victimTouchesWater(h.victim)){
+              resetHook(h);
+              if(withAI){ endMatch(true); cleanup(); }
+              if(isHost){ net?.broadcast({t:'end', winner: (h.owner===right?'admin':'user')}); endMatch(h.owner===right); cleanup(); }
+            }
+          }
+        });
+
+        if(withAI) aiTick(dt);
+        updateCooldownUI();
+
+        // Host sends snapshots ~20Hz
+        if(isHost && net && net.conn && net.conn.open){
+          net._lastSend = net._lastSend || 0;
+          if(performance.now() - net._lastSend > 50){
+            net._lastSend = performance.now();
+            const state = {
+              t:'state',
+              s:{
+                right: {...right}, left: {...left},
+                rightHook: {...rightHook, owner:undefined, victim:undefined},
+                leftHook:  {...leftHook, owner:undefined, victim:undefined},
+                runes: runes.map(r=>({...r})),
+                visionRightUntil, visionLeftUntil,
+                cdRightUntil, cdLeftUntil, riverOff
+              }
+            };
+            net.broadcast(state);
+          }
+        }
+      }
+
+      function render(){
+        ctx.clearRect(0,0,W,H);
+        // Background + river
+        ctx.fillStyle='#0f172a'; ctx.fillRect(0,0,W,H);
+        for(let x=LEFT_BANK_X; x<RIGHT_BANK_X; x+=16){
+          for(let y=((riverOff|0)%16)-16; y<H; y+=16){
+            ctx.fillStyle='#2563eb'; ctx.fillRect(x,y,16,16);
+            ctx.strokeStyle='rgba(96,165,250,0.7)';
+            ctx.beginPath(); ctx.moveTo(x,y); ctx.lineTo(x+16,y+16);
+            ctx.moveTo(x+16,y); ctx.lineTo(x,y+16); ctx.stroke();
+          }
+        }
+        // Runes
+        for(const r of runes){
+          ctx.fillStyle = (r.type==='power') ? '#ff4444' : '#ffff66';
+          ctx.beginPath(); ctx.arc(r.x,r.y,8,0,Math.PI*2); ctx.fill();
+          if(r.type==='power'){ ctx.strokeStyle='white'; ctx.lineWidth=2; ctx.stroke() }
+        }
+        // Bodies (left hidden unless right has reveal)
+        const enemyVisible = performance.now() < visionLeftUntil;
+        if(enemyVisible){ drawRect(left.x-12, left.y-12, 24, 24, 5, '#f59e0b'); }
+        drawRect(right.x-12, right.y-12, 24, 24, 5, '#38bdf8');
+        // Fog on left
+        ctx.fillStyle = `rgba(0,0,0,${enemyVisible?FOG_ALPHA_SEEN:FOG_ALPHA_HIDDEN})`; ctx.fillRect(0,0,LEFT_BANK_X,H);
+        // Hooks on top
+        [rightHook, leftHook].forEach(h=>{
+          if(h.state==='idle') return;
+          ctx.strokeStyle='#94a3b8'; ctx.lineWidth=3; ctx.beginPath(); ctx.moveTo(h.owner.x,h.owner.y); ctx.lineTo(h.x,h.y); ctx.stroke();
+          ctx.fillStyle='#f97316'; ctx.beginPath(); ctx.arc(h.x,h.y,6,0,Math.PI*2); ctx.fill();
+          ctx.strokeStyle='white'; ctx.lineWidth=2; ctx.beginPath(); ctx.arc(h.x,h.y,6,0,Math.PI*2); ctx.stroke();
+          if(h.carry){ ctx.fillStyle=(h.carry.type==='power')?'#ff4444':'#ffff66'; ctx.beginPath(); ctx.arc(h.carry.x,h.carry.y,8,0,Math.PI*2); ctx.fill(); if(h.carry.type==='power'){ ctx.strokeStyle='white'; ctx.lineWidth=2; ctx.stroke() } }
+        });
+      }
+
+      function drawRect(x,y,w,h,r,fill){ ctx.fillStyle=fill; roundRect(ctx,x,y,w,h,r,true,false); }
+      function roundRect(ctx, x, y, w, h, r, fill, stroke){
+        if(typeof r === 'number'){ r={tl:r,tr:r,br:r,bl:r} }
+        ctx.beginPath();
+        ctx.moveTo(x+r.tl,y); ctx.lineTo(x+w-r.tr,y); ctx.quadraticCurveTo(x+w,y,x+w,y+r.tr);
+        ctx.lineTo(x+w,y+h-r.br); ctx.quadraticCurveTo(x+w,y+h,x+w-r.br,y+h);
+        ctx.lineTo(x+r.bl,y+h); ctx.quadraticCurveTo(x,y+h,x,y+h-r.bl);
+        ctx.lineTo(x,y+r.tl); ctx.quadraticCurveTo(x,y,x+r.tl,y); ctx.closePath();
+        if(fill) ctx.fill(); if(stroke) ctx.stroke();
+      }
+
+      function endMatch(playerWon){
+        screen='over';
+        if(withAI){
+          if(playerWon){ stats.wins++; showModal('Победа!', 'Бот утонул. Красиво сыграно.'); }
+          else{ stats.loses++; showModal('Поражение', 'Ты утонул. Попробуешь ещё раз?'); }
+        }else{
+          showModal(playerWon?'Победа!':'Поражение', playerWon?'Оппонент утонул.':'Ты утонул.');
+        }
+      }
+
+      // Public API used by host for remote click
+      return {
+        update, render,
+        hostThrowLeft, cleanup,
+        canThrow(){ return canThrowRight() },
+        throwRight(x,y){ if(canThrowRight()){ throwHook(rightHook,x,y); setRightCD(1200) } },
+        applyRemoteState(s){
+          // client applies host state
+          const copy=(dst,src,keys)=>{ keys.forEach(k=>dst[k]=src[k]); };
+          copy(right, s.right, ['x','y','vx','vy','r','longHookUntil']);
+          copy(left,  s.left,  ['x','y','vx','vy','r','longHookUntil']);
+          Object.assign(rightHook, s.rightHook); rightHook.owner=right; rightHook.victim=left;
+          Object.assign(leftHook,  s.leftHook ); leftHook.owner=left;   leftHook.victim=right;
+          runes.length=0; for(const r of s.runes) runes.push({...r});
+          visionLeftUntil = s.visionLeftUntil || 0;
+          visionRightUntil = s.visionRightUntil || 0;
+          // right cooldown UI
+          cdRightUntil = s.cdRightUntil || 0; updateCooldownUI();
+          // river offset
+          riverOff = s.riverOff || 0;
+        }
+      };
     }
 
-    // MP: create/join lobby (same as r8, only focus behavior changed)
-    let peer=null, conn=null, roomCode=null;
+    let engine=null, prev=performance.now();
+    function loop(now){
+      const dt=Math.min(0.033,(now-prev)/1000); prev=now;
+      if(screen==='game' && engine){ engine.update(dt); engine.render(); }
+      requestAnimationFrame(loop);
+    }
+    requestAnimationFrame(loop);
+
+    function startMatchSP(){ closeMpPanels(); engine && engine.cleanup && engine.cleanup(); engine=createEngine({mode:'sp'}); screen='game'; }
+
+    // ===== Multiplayer via PeerJS =====
+    let peer=null, conn=null, roomCode=null, hostNet=null;
+
     function makeRoomCode(){ return String(Math.floor(10000+Math.random()*90000)) }
     function roomIdFromCode(code){ return 'hookarena-'+code }
+
     function createLobby(){
       openMpMenu(); mpMenu.style.display='none'; mpHost.style.display='block'; hostPlayers.textContent='admin (ты)'; hostStatus.textContent='';
-      roomCode = makeRoomCode();
-      roomCodeEl.textContent = roomCode;
-      roomBadge.textContent = 'код действует пока ты в лобби';
+      roomCode = makeRoomCode(); roomCodeEl.textContent = roomCode; roomBadge.textContent = 'код действует пока ты в лобби';
       const peerId = roomIdFromCode(roomCode);
       try{
         peer = new Peer(peerId, { debug: 1 });
         peer.on('open', id => { hostStatus.textContent='Ожидание подключения...'; });
         peer.on('connection', c => {
           conn = c; hostStatus.textContent='Игрок подключился (user)'; hostPlayers.textContent='admin (ты)\nuser';
-          conn.on('data', (msg)=>{});
-          conn.on('close', ()=>{ hostStatus.textContent='Игрок отключился'; btnStartMp.disabled=true; hostPlayers.textContent='admin (ты)'; });
           btnStartMp.disabled=false;
+          conn.on('data', onClientMsg);
+          conn.on('close', ()=>{ hostStatus.textContent='Игрок отключился'; btnStartMp.disabled=true; hostPlayers.textContent='admin (ты)'; if(screen==='game'){ showModal('Отключение', 'Оппонент вышел.'); } });
         });
         peer.on('error', err => { hostStatus.textContent='Ошибка: '+err; });
       }catch(e){ hostStatus.textContent='PeerJS не доступен (нужен HTTPS).'; }
     }
-    btnStartMp.onclick=()=>{ alert('Старт MP игры (заглушка r9). На GH Pages используйте полную версию (r8/r10).'); };
+
+    btnStartMp.onclick=()=>{
+      if(conn && conn.open){
+        conn.send({t:'start'});
+        startMatchMPHost();
+      }
+    };
+
+    function startMatchMPHost(){
+      closeMpPanels();
+      hostNet = {
+        conn,
+        broadcast(msg){ try{ conn && conn.open && conn.send(msg) }catch(e){} },
+        lastInput:null,
+        send(){}
+      };
+      engine && engine.cleanup && engine.cleanup();
+      engine = createEngine({mode:'mpHost', net: hostNet});
+      screen='game';
+    }
+
+    function onClientMsg(msg){
+      if(!msg) return;
+      if(msg.t==='input'){ if(hostNet) hostNet.lastInput = msg.data; }
+      if(msg.t==='click'){ if(engine && engine.hostThrowLeft){ engine.hostThrowLeft(msg.x, msg.y); } }
+    }
+
+    function startMatchMPClient(){
+      closeMpPanels();
+      engine && engine.cleanup && engine.cleanup();
+      const net = {
+        conn,
+        send(msg){ try{ conn && conn.open && conn.send(msg) }catch(e){} }
+      };
+      engine = createEngine({mode:'mpClient', net});
+      // Client net handlers
+      conn.on('data', msg=>{
+        if(!msg) return;
+        if(msg.t==='state'){ engine.applyRemoteState && engine.applyRemoteState(msg.s); }
+        if(msg.t==='end'){ showModal(msg.winner==='admin' ? 'Поражение' : 'Победа!', msg.winner==='admin' ? 'Хост утопил тебя.' : 'Ты утопил хоста.'); screen='over'; }
+        if(msg.t==='clickEcho'){ /* could draw effects if needed */ }
+      });
+      screen='game';
+    }
 
     btnJoinGo.onclick=()=>{
       const code = (joinCodeEl.value||'').trim();
@@ -236,15 +611,15 @@
         peer.on('open', id => {
           const idHost = roomIdFromCode(code);
           conn = peer.connect(idHost);
-          conn.on('open', ()=>{ joinStatus.textContent='Подключено! Ожидаем старт.'; });
-          conn.on('error', err=>{ joinStatus.textContent='Ошибка соединения: '+err });
+          conn.on('open', ()=>{ joinStatus.textContent='Подключено! Ожидаем старт.'; startMatchMPClient(); });
+          conn.on('error', err=>{ joinStatus.textContent='Ошибка соединения: '+err; });
           conn.on('close', ()=>{ joinStatus.textContent='Соединение закрыто'; });
         });
-        peer.on('error', err => { joinStatus.textContent='Ошибка Peer: '+err });
+        peer.on('error', err => { joinStatus.textContent='Ошибка Peer: '+err; });
       }catch(e){ joinStatus.textContent='PeerJS не доступен (нужен HTTPS).'; }
     };
 
-    // Init first tab
+    // Initial tab
     tabs[0].click();
   })();
   </script>
