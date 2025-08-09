@@ -3,20 +3,20 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Hook Arena — GH Pages Multiplayer (r10)</title>
+  <title>Hook Arena — GH Pages Multiplayer (r11)</title>
   <style>
     html, body { height: 100%; margin: 0; background:#0b0f17; }
     #root { height: 100%; display:grid; place-items:center; }
     canvas { image-rendering: pixelated; background:#0b0f17; outline:none; }
-    .hint{position:fixed;left:50%;transform:translateX(-50%);top:10px;color:#e2e8f0;font:14px/1.4 system-ui,sans-serif;background:#0f172a;border:1px solid #334155;border-radius:10px;padding:8px 12px}
-    .hud{position:fixed;left:10px;top:10px;color:#e5e7eb;font:14px/1.3 system-ui,sans-serif;opacity:.9}
-    .menuBtn{position:fixed;right:12px;top:12px;background:#1f2937;border:1px solid #334155;color:#e5e7eb;border-radius:8px;padding:8px 12px;cursor:pointer}
+    .hint{position:fixed;left:50%;transform:translateX(-50%);top:10px;color:#e2e8f0;font:14px/1.4 system-ui,sans-serif;background:#0f172a;border:1px solid #334155;border-radius:10px;padding:8px 12px;display:none}
+    .hud{position:fixed;left:10px;top:10px;color:#e5e7eb;font:14px/1.3 system-ui,sans-serif;opacity:.9;display:none}
+    .menuBtn{position:fixed;right:12px;top:12px;background:#1f2937;border:1px solid #334155;color:#e5e7eb;border-radius:8px;padding:8px 12px;cursor:pointer;display:none}
     .menuPanel{position:fixed;right:12px;top:56px;background:#0b1220;border:1px solid #334155;color:#e5e7eb;border-radius:10px;min-width:260px;display:none;z-index:10}
     .tabs{display:flex;border-bottom:1px solid #334155}
     .tab{flex:1;padding:8px 10px;text-align:center;cursor:pointer}
     .tab.active{background:#111827}
     .tabBody{padding:10px 12px;font:14px/1.4 system-ui,sans-serif}
-    .skillbar{position:fixed;bottom:10px;left:50%;transform:translateX(-50%);display:flex;gap:8px; z-index:5}
+    .skillbar{position:fixed;bottom:10px;left:50%;transform:translateX(-50%);display:none;gap:8px; z-index:5}
     .skill{width:48px;height:48px;background:#1f2937;border:2px solid #334155;border-radius:8px;position:relative;overflow:hidden}
     .skill img{width:100%;height:100%;object-fit:cover;opacity:1}
     .skill.cd img{opacity:0.4}
@@ -36,23 +36,41 @@
     .inp{width:100%;padding:10px 12px;border:1px solid #334155;border-radius:8px;background:#0f172a;color:#e5e7eb;font-size:18px;letter-spacing:2px;text-align:center}
     .badge{display:inline-block;padding:4px 8px;border:1px solid #334155;border-radius:8px;background:#0f172a;margin-left:8px}
     .mpList{border:1px dashed #334155; border-radius:8px; padding:8px 10px; font:14px system-ui,sans-serif; min-height:60px; white-space:pre-line}
+    /* Home overlay */
+    .home{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;z-index:12}
+    .homeCard{background:#0b1220cc;border:1px solid #334155;color:#e5e7eb;border-radius:16px;padding:20px 24px;min-width:300px;max-width:90vw;text-align:center;backdrop-filter: blur(6px)}
+    .homeTitle{font:30px/1.2 system-ui,sans-serif;margin-bottom:14px}
+    .homeRow{margin-top:10px;display:flex;gap:10px;justify-content:center}
   </style>
   <script src="https://unpkg.com/peerjs@1.5.2/dist/peerjs.min.js"></script>
 </head>
 <body>
   <div id="root"><canvas id="game" width="960" height="540" tabindex="0"></canvas></div>
-  <div class="hint">WASD/стрелки — движение • ЛКМ — хук (через 3.5с) • M — меню • R — рестарт • Мультиплеер на HTTPS (GitHub Pages)</div>
+
+  <!-- Home menu -->
+  <div id="home" class="home">
+    <div class="homeCard">
+      <div class="homeTitle">HOOK ARENA</div>
+      <div>Выбери режим:</div>
+      <div class="homeRow">
+        <button class="btn primary" id="homePlay">Играть (бот)</button>
+        <button class="btn" id="homeMP">Мультиплеер</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="hint" id="hint">WASD/стрелки — движение • ЛКМ — хук (через 3.5с) • M — меню • R — рестарт</div>
   <div id="pickup" class="pickup"></div>
   <button id="btnMenu" class="menuBtn">Главное меню</button>
-  <div id="menuPanel" class="menuPanel">
+  <div class="menuPanel" id="menuPanel">
     <div class="tabs">
       <div data-tab="main" class="tab active">Главная</div>
       <div data-tab="profile" class="tab">Профиль</div>
     </div>
-    <div class="tabBody" id="tabMain">Добро пожаловать в Hook Arena! Нажми «Играть» (бот) или <b>«Мультиплеер»</b>.</div>
+    <div class="tabBody" id="tabMain">Добро пожаловать в Hook Arena!</div>
     <div class="tabBody" id="tabProfile" style="display:none">Профиль игрока (заглушка).</div>
   </div>
-  <div class="skillbar">
+  <div class="skillbar" id="skillbar">
     <div class="skill" id="hookSkill">
       <img alt="Hook" src="data:image/svg+xml;utf8,<?xml version='1.0' encoding='UTF-8'?><svg xmlns='http://www.w3.org/2000/svg' width='48' height='48'><rect width='48' height='48' rx='8' ry='8' fill='%231f2937'/><text x='50%' y='50%' dominant-baseline='middle' text-anchor='middle' font-family='Verdana' font-size='22' fill='%23e5e7eb'>H</text></svg>"/>
       <div class="cdtimer" style="display:none"></div>
@@ -80,7 +98,6 @@
       <button class="btn" id="btnJoin">Присоединиться</button>
       <button class="btn" id="btnCloseMp">Назад</button>
     </div>
-    <div class="mpRow" style="opacity:.8">Сгенерируй код и отправь другу или введи код, чтобы подключиться.</div>
   </div>
 
   <div id="mpHost" class="mpPanel">
@@ -118,11 +135,9 @@
     const MP_ENABLED = (location.protocol==='https:' || location.hostname==='localhost');
 
     const canvas=document.getElementById('game'), ctx=canvas.getContext('2d');
-    function focusCanvas(){ canvas.focus({preventScroll:true}); }
-    focusCanvas();
-    ['pointerdown','click','focus'].forEach(ev=>window.addEventListener(ev, focusCanvas));
+    const hud=document.getElementById('hud'), hint=document.getElementById('hint'), skillbar=document.getElementById('skillbar');
+    const home=document.getElementById('home'); const homePlay=document.getElementById('homePlay'); const homeMP=document.getElementById('homeMP');
 
-    const hud=document.getElementById('hud');
     const hookSkillEl=document.getElementById('hookSkill'), hookSkillTimerEl=hookSkillEl.querySelector('.cdtimer');
     const btnMenu=document.getElementById('btnMenu'), panel=document.getElementById('menuPanel');
     const tabMain=document.getElementById('tabMain'), tabProfile=document.getElementById('tabProfile');
@@ -149,72 +164,58 @@
     const roomBadge=document.getElementById('roomBadge');
     const btnStartMp=document.getElementById('btnStartMp');
 
-    let screen='menu', globalLevel=1, stats={wins:0, loses:0};
+    let screen='home', globalLevel=1, stats={wins:0, loses:0};
+
+    // Home menu actions
+    homePlay.onclick=()=>{ startMatchSP(); };
+    homeMP.onclick=()=>{
+      if(!MP_ENABLED || !window.Peer){ alert('Мультиплеер работает на GitHub Pages (HTTPS).'); return; }
+      openMpMenu();
+    };
 
     btnMenu.onclick=()=>{ panel.style.display = (panel.style.display==='block'?'none':'block') };
     tabs.forEach(t=>t.onclick=()=>{
       tabs.forEach(x=>x.classList.remove('active')); t.classList.add('active');
       const name=t.dataset.tab;
-      if(name==='main'){ screen='menu'; }
-      tabMain.innerHTML = `Добро пожаловать в Hook Arena! Нажми «Играть» (бот) или <b>«Мультиплеер»</b>.`;
-      tabMain.appendChild(buildMainButtons());
+      tabMain.textContent = 'Добро пожаловать в Hook Arena!';
       tabMain.style.display=(name==='main')?'block':'none';
       tabProfile.style.display=(name==='profile')?'block':'none';
       tabProfile.textContent=`Побед: ${stats.wins}, Поражений: ${stats.loses}`;
     });
 
-    function buildMainButtons(){
-      const wrap=document.createElement('div'); wrap.style.marginTop='10px';
-      const btnPlay=document.createElement('button'); btnPlay.className='btn primary'; btnPlay.textContent='Играть (бот)';
-      const btnMP=document.createElement('button'); btnMP.className='btn'; btnMP.style.marginLeft='8px'; btnMP.textContent='Мультиплеер';
-      btnPlay.onclick=()=>{ startMatchSP(); };
-      btnMP.onclick=()=>{
-        if(!MP_ENABLED || !window.Peer){ alert('Мультиплеер работает на GitHub Pages (HTTPS).'); return; }
-        openMpMenu();
-      };
-      wrap.appendChild(btnPlay); wrap.appendChild(btnMP);
-      return wrap;
+    function showGameUI(on){ hud.style.display=on?'block':'none'; hint.style.display=on?'block':'none'; btnMenu.style.display=on?'block':'none'; skillbar.style.display=on?'flex':'none'; }
+    function showHome(on){ home.style.display=on?'flex':'none'; }
+
+    // Animated background for menus
+    const blobs=[]; for(let i=0;i<12;i++){ blobs.push({x:Math.random()*W,y:Math.random()*H,r:30+Math.random()*120,dx:(-1+Math.random()*2)*0.15,dy:(-1+Math.random()*2)*0.15, hue:(200+Math.random()*100)|0}) }
+    function drawBackground(dt){
+      ctx.clearRect(0,0,W,H);
+      ctx.fillStyle='#0b0f17'; ctx.fillRect(0,0,W,H);
+      blobs.forEach(b=>{ b.x+=b.dx*dt*60; b.y+=b.dy*dt*60; if(b.x<-b.r) b.x=W+b.r; if(b.x>W+b.r) b.x=-b.r; if(b.y<-b.r) b.y=H+b.r; if(b.y>H+b.r) b.y=-b.r;
+        const g=ctx.createRadialGradient(b.x,b.y,0,b.x,b.y,b.r); g.addColorStop(0,`hsla(${b.hue},70%,55%,.15)`); g.addColorStop(1,'rgba(0,0,0,0)'); ctx.fillStyle=g; ctx.beginPath(); ctx.arc(b.x,b.y,b.r,0,Math.PI*2); ctx.fill();
+      });
     }
 
-    function openMpMenu(){ mpMenu.style.display='block'; mpHost.style.display='none'; mpJoin.style.display='none'; }
-    function closeMpPanels(){ mpMenu.style.display='none'; mpHost.style.display='none'; mpJoin.style.display='none'; }
-    btnCloseMp.onclick=closeMpPanels;
-
-    btnHost.onclick=()=>{ createLobby(); };
-    btnJoin.onclick=()=>{
-      mpMenu.style.display='none'; mpJoin.style.display='block'; joinStatus.textContent='';
-      // Focus instantly (keeps iOS keyboard)
-      joinCodeEl.value=''; joinCodeEl.focus({preventScroll:true}); joinCodeEl.select && joinCodeEl.select();
-    };
-    btnHostBack.onclick=()=>{ closeMpPanels(); };
-    btnJoinBack.onclick=()=>{ openMpMenu(); };
-
-    // Numeric filter + Enter shortcut
-    joinCodeEl.addEventListener('input', ()=>{ joinCodeEl.value=(joinCodeEl.value||'').replace(/\D+/g,'').slice(0,5); });
-    joinCodeEl.addEventListener('keydown', e=>{ if(e.key==='Enter'){ btnJoinGo.click(); } });
-
-    // Modal buttons
-    btnPlayAgain.onclick=()=>{ if(screen==='over'){ startMatchSP(); hideModal(); } };
-    btnGoMain.onclick=()=>{ hideModal(); screen='menu'; };
-
-    function showModal(title, msg){ modalTitle.textContent=title; modalMsg.textContent=msg; modal.style.display='flex'; }
-    function hideModal(){ modal.style.display='none'; }
-
-    // ===== Core engine (SP + MP) =====
+    // Keyboard handling (only when game screen)
     const keys={};
     function onKey(e,down){
       const code=e.code; keys[code]=down;
       if(['ArrowUp','ArrowDown','ArrowLeft','ArrowRight','Space'].includes(code)) e.preventDefault();
-      if(down && (code==='KeyM')){ panel.style.display=(panel.style.display==='block'?'none':'block') }
-      if(down && (code==='KeyR')){ if(screen==='game') startMatchSP(); }
+      if(screen==='game'){
+        if(down && (code==='KeyM')){ panel.style.display=(panel.style.display==='block'?'none':'block') }
+        if(down && (code==='KeyR')){ startMatchSP(); }
+      }
     }
     window.addEventListener('keydown',e=>onKey(e,true), {passive:false});
     window.addEventListener('keyup',e=>onKey(e,false));
-    document.addEventListener('keydown',e=>onKey(e,true), {passive:false});
-    document.addEventListener('keyup',e=>onKey(e,false));
 
     const pointer={x:W/2,y:H/2};
     canvas.addEventListener('mousemove',e=>{ const r=canvas.getBoundingClientRect(); pointer.x=e.clientX-r.left; pointer.y=e.clientY-r.top; });
+
+    // ===== Engine (SP + MP) — same as r10 but:
+    // - start screen is 'home'
+    // - per-player fog (client uses visionRightUntil, host uses visionLeftUntil)
+    // - client sees себя справа: рисуем с зеркалированием координат (x -> W - x) только в рендере и при кликах.
 
     function createEngine(params){
       const {mode, net} = params || {};
@@ -222,29 +223,26 @@
       const isHost = (mode==='mpHost');
       const isClient = (mode==='mpClient');
 
-      const LEFT_LIMIT = 12, RIGHT_LIMIT = W-12;
-      const BASE_RANGE_PLAYER = Math.floor((W*RIVER_FR) + (LEFT_BANK_X)/3);  // right (admin)
-      const BASE_RANGE_LEFT   = Math.floor((W*RIVER_FR) + (W-RIGHT_BANK_X)/3); // left (user)
+      const BASE_RANGE_RIGHT = Math.floor((W*RIVER_FR) + (LEFT_BANK_X)/3);
+      const BASE_RANGE_LEFT  = Math.floor((W*RIVER_FR) + (W-RIGHT_BANK_X)/3);
 
-      const right={x:RIGHT_BANK_X+100,y:H/2,vx:0,vy:0,r:12,longHookUntil:0}; // admin / you
-      const left ={x:LEFT_BANK_X-100 ,y:H/2,vx:0,vy:0,r:12,longHookUntil:0}; // opponent (bot or user)
+      const right={x:RIGHT_BANK_X+100,y:H/2,vx:0,vy:0,r:12,longHookUntil:0}; // admin / local
+      const left ={x:LEFT_BANK_X-100 ,y:H/2,vx:0,vy:0,r:12,longHookUntil:0}; // opponent or user
       const hook=(owner,victim)=>({state:'idle',x:-1000,y:-1000,vx:0,vy:0,startX:0,startY:0,carry:null,owner,victim});
       const rightHook=hook(right,left), leftHook=hook(left,right);
       const runes=[];
       let lastReveal=performance.now(), lastPower=performance.now();
       const revealDelay=4000, powerDelay=8000;
-      let riverOff=0, visionRightUntil=0, visionLeftUntil=0;
+      let riverOff=0, visionLeftUntil=0, visionRightUntil=0;
       const startAt=performance.now();
       let cdRightUntil=0, cdLeftUntil=0;
-      let botCD=900, botMoveTimer=0, botWaypoint=null;
+      let botCD=900, botWaypoint=null;
       let pickupUntil=0;
 
       function randInt(a,b){ return (Math.random()*(b-a)+a)|0 }
       function canThrowRight(){ return performance.now()-startAt>=BLOCK_TIME && performance.now()>=cdRightUntil && rightHook.state==='idle' }
-      function canThrowLeft(){  return performance.now()-startAt>=BLOCK_TIME && performance.now()>=cdLeftUntil  && leftHook.state==='idle' }
       function setRightCD(ms){ cdRightUntil=performance.now()+ms; hookSkillEl.classList.add('cd'); hookSkillTimerEl.style.display='flex' }
       function updateCooldownUI(){ if(performance.now()<cdRightUntil){ hookSkillTimerEl.textContent=Math.max(0,Math.ceil((cdRightUntil-performance.now())/1000)); } else { hookSkillEl.classList.remove('cd'); hookSkillTimerEl.style.display='none' } }
-
       function throwHook(h, tx, ty){ if(h.state!=='idle') return; h.state='flying'; h.carry=null; h.x=h.owner.x; h.y=h.owner.y; h.startX=h.x; h.startY=h.y; const ang=Math.atan2(ty-h.y, tx-h.x); h.vx=Math.cos(ang)*HOOK_SPEED; h.vy=Math.sin(ang)*HOOK_SPEED; }
       const startReturn=h=>{ if(h.state!=='idle') h.state='returning' };
       const resetHook=h=>{ h.state='idle'; h.x=-1000; h.y=-1000; h.vx=h.vy=0; h.carry=null };
@@ -256,17 +254,13 @@
         showToast(`${owner===right?'Ты':'Оппонент'} взял ${r.type==='reveal'?'жёлтую руну':'красную руну'}`);
       }
 
-      // Input handling
       canvas.onmousedown = ()=>{
-        if(isClient){ net?.send({t:'click', x:pointer.x, y:pointer.y}); return; }
-        if(canThrowRight()){ throwHook(rightHook, pointer.x, pointer.y); setRightCD(1200); if(isHost) net?.broadcast({t:'clickEcho', side:'right', x:pointer.x, y:pointer.y}); }
+        if(isClient){ const hostX=W-pointer.x; net?.send({t:'click', x:hostX, y:pointer.y}); return; }
+        if(canThrowRight()){ throwHook(rightHook, pointer.x, pointer.y); setRightCD(1200); if(isHost) net?.broadcast({t:'clickEcho', side:'right'}) }
       };
 
-      // Host can apply remote left click
-      function hostThrowLeft(x,y){ if(canThrowLeft()){ throwHook(leftHook, x, y); cdLeftUntil=performance.now()+1200; if(isHost) net?.broadcast({t:'clickEcho', side:'left', x, y}); } }
-
       function aiTick(dt){
-        // only in SP: left is bot
+        if(!withAI) return;
         const lvl=Math.max(1, Math.min(5, globalLevel));
         const dodgeChance=[0,.35,.50,.65,.78,.88][lvl];
         const prediction=[0,.10,.18,.26,.34,.42][lvl];
@@ -278,22 +272,15 @@
         const dToRight = Math.hypot(right.x-left.x, right.y-left.y);
         const needLong = (performance.now()>left.longHookUntil) && (dToRight > BASE_RANGE_LEFT - 5);
 
-        const nearest = (type)=>{
-          let best=null, bestD=1e9;
-          for(const r of runes){ if(r.type!==type) continue; const d=Math.hypot(r.x-left.x, r.y-left.y); if(d<bestD){ best=r; bestD=d } }
-          return {obj:best, dist:bestD};
-        };
-        const pow = nearest('power');
-        const rev = nearest('reveal');
+        const nearest = (type)=>{ let best=null, bestD=1e9; for(const r of runes){ if(r.type!==type) continue; const d=Math.hypot(r.x-left.x, r.y-left.y); if(d<bestD){ best=r; bestD=d } } return {obj:best, dist:bestD}; };
+        const pow = nearest('power'); const rev = nearest('reveal');
 
         let target = null;
         if(needLong && pow.obj) target=pow.obj;
         else if(!leftHasVision && rev.obj) target=rev.obj;
         if(!target){
           if(!botWaypoint || botWaypoint.ttl<=0 || Math.hypot(botWaypoint.x-left.x, botWaypoint.y-left.y)<10){
-            const x = randInt(24, LEFT_BANK_X-24);
-            const y = randInt(40, H-40);
-            botWaypoint = {x,y, ttl: randInt(800,1600)};
+            botWaypoint = {x:randInt(24, LEFT_BANK_X-24), y:randInt(40, H-40), ttl:randInt(800,1600)};
           } else { botWaypoint.ttl -= dt*1000; }
           target = botWaypoint;
         }
@@ -301,10 +288,8 @@
         const speed = 140;
         if(target){
           const ang = Math.atan2(target.y-left.y, target.x-left.x);
-          left.vx = Math.cos(ang)*speed;
-          left.vy = Math.sin(ang)*speed;
-          if(left.x<LEFT_LIMIT && left.vx<0) left.vx=0;
-          if(left.x>LEFT_BANK_X && left.vx>0) left.vx=0;
+          left.vx = Math.cos(ang)*speed; left.vy = Math.sin(ang)*speed;
+          if(left.x<12 && left.vx<0) left.vx=0; if(left.x>LEFT_BANK_X && left.vx>0) left.vx=0;
         }
 
         if(rightHook.state==='flying'){
@@ -325,78 +310,47 @@
             if(dToRight <= BASE_RANGE_LEFT || performance.now() < left.longHookUntil){
               const tx=right.x + right.vx*prediction + (Math.random()-0.5)*2*jitter;
               const ty=right.y + right.vy*prediction + (Math.random()-0.5)*2*jitter;
-              throwHook(leftHook, tx, ty);
-              botCD=randInt(cdMin, cdMax); return;
+              throwHook(leftHook, tx, ty); botCD=randInt(cdMin, cdMax); return;
             }
           }
           botCD = randInt(400,900);
         }
       }
 
-      function collectInputs(){
-        return {
-          keys: {
-            KeyA: !!keys['KeyA'], KeyD: !!keys['KeyD'], KeyW: !!keys['KeyW'], KeyS: !!keys['KeyS'],
-            ArrowLeft: !!keys['ArrowLeft'], ArrowRight: !!keys['ArrowRight'], ArrowUp: !!keys['ArrowUp'], ArrowDown: !!keys['ArrowDown']
-          },
-          pointer: { x: pointer.x, y: pointer.y }
-        };
-      }
-
-      // Client input sender interval
+      // Client inputs sender
       let inputTimer=null;
-      if(isClient && net){
-        inputTimer = setInterval(()=>{ net.send({t:'input', data: collectInputs()}) }, 50);
-      }
+      if(isClient && net){ inputTimer = setInterval(()=>{
+        net.send({t:'input', data:{
+          keys:{KeyA:!!keys['KeyA'],KeyD:!!keys['KeyD'],KeyW:!!keys['KeyW'],KeyS:!!keys['KeyS'],ArrowLeft:!!keys['ArrowLeft'],ArrowRight:!!keys['ArrowRight'],ArrowUp:!!keys['ArrowUp'],ArrowDown:!!keys['ArrowDown']},
+          pointer:{x:W-pointer.x,y:pointer.y}
+        }});
+      },50); }
 
       function cleanup(){ if(inputTimer){ clearInterval(inputTimer); inputTimer=null; } }
 
       function update(dt){
-        hud.textContent = (withAI?'SP':'MP') + (isHost?' Host':' Client');
-        riverOff=(riverOff + 60*dt)%16;
-        if(performance.now()>pickupUntil){ pickupEl.style.display='none'; }
+        // UI elements
+        // movement local (right)
+        if(!(isClient)){ let vx=0,vy=0; const k=keys; if(k['KeyA']||k['ArrowLeft']) vx-=PLAYER_SPEED; if(k['KeyD']||k['ArrowRight']) vx+=PLAYER_SPEED; if(k['KeyW']||k['ArrowUp']) vy-=PLAYER_SPEED; if(k['KeyS']||k['ArrowDown']) vy+=PLAYER_SPEED; right.vx=vx; right.vy=vy; }
+        if(isHost && net && net.lastInput){ const k=net.lastInput.keys||{}; let vx=0,vy=0; if(k.KeyA||k.ArrowLeft) vx-=PLAYER_SPEED; if(k.KeyD||k.ArrowRight) vx+=PLAYER_SPEED; if(k.KeyW||k.ArrowUp) vy-=PLAYER_SPEED; if(k.KeyS||k.ArrowDown) vy+=PLAYER_SPEED; left.vx=vx; left.vy=vy; }
 
-        if(!isClient){
-          // Right local control
-          let vx=0,vy=0; const k=keys;
-          if(k['KeyA']||k['ArrowLeft']) vx-=PLAYER_SPEED;
-          if(k['KeyD']||k['ArrowRight']) vx+=PLAYER_SPEED;
-          if(k['KeyW']||k['ArrowUp']) vy-=PLAYER_SPEED;
-          if(k['KeyS']||k['ArrowDown']) vy+=PLAYER_SPEED;
-          right.vx=vx; right.vy=vy;
-        }
-        if(isHost && net && net.lastInput){
-          const k=net.lastInput.keys||{}; let vx=0,vy=0;
-          if(k.KeyA||k.ArrowLeft) vx-=PLAYER_SPEED;
-          if(k.KeyD||k.ArrowRight) vx+=PLAYER_SPEED;
-          if(k.KeyW||k.ArrowUp) vy-=PLAYER_SPEED;
-          if(k.KeyS||k.ArrowDown) vy+=PLAYER_SPEED;
-          left.vx=vx; left.vy=vy;
-          // pointer not used for movement here
-        }
-
-        // Bounds (unless pulled)
+        // Bounds
         const pulledRight = (leftHook.state==='pulling' && leftHook.victim===right) || (rightHook.state==='pulling' && rightHook.victim===right);
         const pulledLeft  = (leftHook.state==='pulling' && leftHook.victim===left)  || (rightHook.state==='pulling' && rightHook.victim===left);
+        if(!pulledRight){ right.x=Math.max(RIGHT_BANK_X, Math.min(W-12, right.x+right.vx*dt)); right.y=Math.max(12, Math.min(H-12, right.y+right.vy*dt)); } else { right.x+=right.vx*dt; right.y+=right.vy*dt; }
+        if(!pulledLeft){  left.x=Math.max(12, Math.min(LEFT_BANK_X, left.x+left.vx*dt)); left.y=Math.max(12, Math.min(H-12, left.y+left.vy*dt)); } else { left.x+=left.vx*dt; left.y+=left.vy*dt; }
 
-        if(!pulledRight){ right.x=Math.max(RIGHT_BANK_X, Math.min(RIGHT_LIMIT, right.x+right.vx*dt)); right.y=Math.max(12, Math.min(H-12, right.y+right.vy*dt)); } else { right.x+=right.vx*dt; right.y+=right.vy*dt; }
-        if(!pulledLeft){  left.x=Math.max(LEFT_LIMIT, Math.min(LEFT_BANK_X, left.x+left.vx*dt)); left.y=Math.max(12, Math.min(H-12, left.y+left.vy*dt)); } else { left.x+=left.vx*dt; left.y+=left.vy*dt; }
-
+        // Runes
         const now=performance.now();
         if(now-lastReveal>revealDelay){ runes.push({x:randInt(LEFT_BANK_X+10,RIGHT_BANK_X-10), y:-10, type:'reveal', speed:PLAYER_SPEED*0.5}); lastReveal=now }
         if(now-lastPower>powerDelay){ runes.push({x:randInt(LEFT_BANK_X+10,RIGHT_BANK_X-10), y:-10, type:'power', speed:PLAYER_SPEED*0.5}); lastPower=now }
+        for(let i=runes.length-1;i>=0;i--){ const r=runes[i]; r.y+=r.speed*dt; if(r.y>H+20){ runes.splice(i,1); continue } if(Math.hypot(right.x-r.x, right.y-r.y) < 20){ applyRune(right,r); runes.splice(i,1); continue } if(Math.hypot(left.x-r.x, left.y-r.y) < 20){ applyRune(left,r); runes.splice(i,1); continue } }
 
-        for(let i=runes.length-1;i>=0;i--){
-          const r=runes[i]; r.y+=r.speed*dt;
-          if(r.y>H+20){ runes.splice(i,1); continue }
-          if(Math.hypot(right.x-r.x, right.y-r.y) < 20){ applyRune(right,r); runes.splice(i,1); continue }
-          if(Math.hypot(left.x-r.x, left.y-r.y) < 20){ applyRune(left,r); runes.splice(i,1); continue }
-        }
-
+        // Hooks
         [rightHook, leftHook].forEach(h=>{
           if(h.state==='flying'){
             h.x+=h.vx*dt; h.y+=h.vy*dt;
-            const baseRange = (h.owner===right) ? BASE_RANGE_PLAYER : BASE_RANGE_LEFT;
+            const baseRange = (h.owner===right) ? BASE_RANGE_RIGHT : BASE_RANGE_LEFT;
             const maxR = ((h.owner.longHookUntil||0) > now) ? W : baseRange;
             const traveled = Math.hypot(h.x-h.startX, h.y-h.startY);
             if(traveled>maxR) startReturn(h);
@@ -407,10 +361,7 @@
             h.vx=Math.cos(ang)*HOOK_SPEED; h.vy=Math.sin(ang)*HOOK_SPEED;
             h.x+=h.vx*dt; h.y+=h.vy*dt;
             if(h.carry){ h.carry.x=h.x; h.carry.y=h.y }
-            if(Math.hypot(h.owner.x-h.x, h.owner.y-h.y) < 16){
-              if(h.carry){ applyRune(h.owner,h.carry); h.carry=null; }
-              resetHook(h);
-            }
+            if(Math.hypot(h.owner.x-h.x, h.owner.y-h.y) < 16){ if(h.carry){ applyRune(h.owner,h.carry); h.carry=null; } resetHook(h); }
           } else if(h.state==='pulling'){
             const ang=Math.atan2(h.owner.y-h.victim.y, h.owner.x-h.victim.x);
             h.victim.vx=Math.cos(ang)*PULL_SPEED; h.victim.vy=Math.sin(ang)*PULL_SPEED;
@@ -425,22 +376,16 @@
         if(withAI) aiTick(dt);
         updateCooldownUI();
 
-        // Host sends snapshots ~20Hz
+        // Host snapshots
         if(isHost && net && net.conn && net.conn.open){
           net._lastSend = net._lastSend || 0;
           if(performance.now() - net._lastSend > 50){
             net._lastSend = performance.now();
-            const state = {
-              t:'state',
-              s:{
-                right: {...right}, left: {...left},
-                rightHook: {...rightHook, owner:undefined, victim:undefined},
-                leftHook:  {...leftHook, owner:undefined, victim:undefined},
-                runes: runes.map(r=>({...r})),
-                visionRightUntil, visionLeftUntil,
-                cdRightUntil, cdLeftUntil, riverOff
-              }
-            };
+            const state = { t:'state', s:{
+              right:{...right}, left:{...left},
+              rightHook:{...rightHook,owner:0,victim:0}, leftHook:{...leftHook,owner:0,victim:0},
+              runes:runes.map(r=>({...r})), visionLeftUntil, visionRightUntil, cdRightUntil, cdLeftUntil:0, riverOff:0
+            }};
             net.broadcast(state);
           }
         }
@@ -448,39 +393,45 @@
 
       function render(){
         ctx.clearRect(0,0,W,H);
-        // Background + river
+        // Grid background with subtle blobs still running under game
         ctx.fillStyle='#0f172a'; ctx.fillRect(0,0,W,H);
+        // River
         for(let x=LEFT_BANK_X; x<RIGHT_BANK_X; x+=16){
-          for(let y=((riverOff|0)%16)-16; y<H; y+=16){
-            ctx.fillStyle='#2563eb'; ctx.fillRect(x,y,16,16);
-            ctx.strokeStyle='rgba(96,165,250,0.7)';
-            ctx.beginPath(); ctx.moveTo(x,y); ctx.lineTo(x+16,y+16);
-            ctx.moveTo(x+16,y); ctx.lineTo(x,y+16); ctx.stroke();
+          for(let y=0; y<H; y+=16){
+            ctx.fillStyle='#1f2d5a'; ctx.fillRect(x,y,16,16);
+            ctx.strokeStyle='rgba(96,165,250,0.35)'; ctx.beginPath(); ctx.moveTo(x,y); ctx.lineTo(x+16,y+16); ctx.moveTo(x+16,y); ctx.lineTo(x,y+16); ctx.stroke();
           }
         }
-        // Runes
+        // Helper to mirror for client
+        const M = x=> isClient ? (W-x) : x;
+
+        // Runes (mirror for client)
         for(const r of runes){
           ctx.fillStyle = (r.type==='power') ? '#ff4444' : '#ffff66';
-          ctx.beginPath(); ctx.arc(r.x,r.y,8,0,Math.PI*2); ctx.fill();
+          ctx.beginPath(); ctx.arc(M(r.x), r.y, 8, 0, Math.PI*2); ctx.fill();
           if(r.type==='power'){ ctx.strokeStyle='white'; ctx.lineWidth=2; ctx.stroke() }
         }
-        // Bodies (left hidden unless right has reveal)
-        const enemyVisible = performance.now() < visionLeftUntil;
-        if(enemyVisible){ drawRect(left.x-12, left.y-12, 24, 24, 5, '#f59e0b'); }
-        drawRect(right.x-12, right.y-12, 24, 24, 5, '#38bdf8');
-        // Fog on left
+        // Bodies: self always blue on right, enemy orange on left
+        const self = isClient ? left : right;
+        const opp  = isClient ? right : left;
+        ctx.fillStyle='#38bdf8'; roundRect(ctx, M(self.x)-12, self.y-12, 24,24,5,true,false);
+        const enemyVisible = isClient ? (performance.now()<visionRightUntil) : (performance.now()<visionLeftUntil);
+        if(enemyVisible){ ctx.fillStyle='#f59e0b'; roundRect(ctx, M(opp.x)-12, opp.y-12, 24,24,5,true,false); }
+        // Fog over opponent side (left from player's view)
         ctx.fillStyle = `rgba(0,0,0,${enemyVisible?FOG_ALPHA_SEEN:FOG_ALPHA_HIDDEN})`; ctx.fillRect(0,0,LEFT_BANK_X,H);
-        // Hooks on top
-        [rightHook, leftHook].forEach(h=>{
+
+        // Hooks: choose self/opp hooks (mirror x for client)
+        const selfHook = isClient ? leftHook : rightHook;
+        const oppHook  = isClient ? rightHook : leftHook;
+        [selfHook, oppHook].forEach(h=>{
           if(h.state==='idle') return;
-          ctx.strokeStyle='#94a3b8'; ctx.lineWidth=3; ctx.beginPath(); ctx.moveTo(h.owner.x,h.owner.y); ctx.lineTo(h.x,h.y); ctx.stroke();
-          ctx.fillStyle='#f97316'; ctx.beginPath(); ctx.arc(h.x,h.y,6,0,Math.PI*2); ctx.fill();
-          ctx.strokeStyle='white'; ctx.lineWidth=2; ctx.beginPath(); ctx.arc(h.x,h.y,6,0,Math.PI*2); ctx.stroke();
-          if(h.carry){ ctx.fillStyle=(h.carry.type==='power')?'#ff4444':'#ffff66'; ctx.beginPath(); ctx.arc(h.carry.x,h.carry.y,8,0,Math.PI*2); ctx.fill(); if(h.carry.type==='power'){ ctx.strokeStyle='white'; ctx.lineWidth=2; ctx.stroke() } }
+          ctx.strokeStyle='#94a3b8'; ctx.lineWidth=3; ctx.beginPath(); ctx.moveTo(M(h.owner.x), h.owner.y); ctx.lineTo(M(h.x), h.y); ctx.stroke();
+          ctx.fillStyle='#f97316'; ctx.beginPath(); ctx.arc(M(h.x), h.y, 6, 0, Math.PI*2); ctx.fill();
+          ctx.strokeStyle='white'; ctx.lineWidth=2; ctx.beginPath(); ctx.arc(M(h.x), h.y, 6, 0, Math.PI*2); ctx.stroke();
+          if(h.carry){ ctx.fillStyle=(h.carry.type==='power')?'#ff4444':'#ffff66'; ctx.beginPath(); ctx.arc(M(h.carry.x), h.carry.y, 8, 0, Math.PI*2); ctx.fill(); if(h.carry.type==='power'){ ctx.strokeStyle='white'; ctx.lineWidth=2; ctx.stroke() } }
         });
       }
 
-      function drawRect(x,y,w,h,r,fill){ ctx.fillStyle=fill; roundRect(ctx,x,y,w,h,r,true,false); }
       function roundRect(ctx, x, y, w, h, r, fill, stroke){
         if(typeof r === 'number'){ r={tl:r,tr:r,br:r,bl:r} }
         ctx.beginPath();
@@ -493,22 +444,12 @@
 
       function endMatch(playerWon){
         screen='over';
-        if(withAI){
-          if(playerWon){ stats.wins++; showModal('Победа!', 'Бот утонул. Красиво сыграно.'); }
-          else{ stats.loses++; showModal('Поражение', 'Ты утонул. Попробуешь ещё раз?'); }
-        }else{
-          showModal(playerWon?'Победа!':'Поражение', playerWon?'Оппонент утонул.':'Ты утонул.');
-        }
+        showModal(playerWon?'Победа!':'Поражение', playerWon?'Оппонент утонул.':'Ты утонул.');
       }
 
-      // Public API used by host for remote click
       return {
-        update, render,
-        hostThrowLeft, cleanup,
-        canThrow(){ return canThrowRight() },
-        throwRight(x,y){ if(canThrowRight()){ throwHook(rightHook,x,y); setRightCD(1200) } },
+        update, render, cleanup,
         applyRemoteState(s){
-          // client applies host state
           const copy=(dst,src,keys)=>{ keys.forEach(k=>dst[k]=src[k]); };
           copy(right, s.right, ['x','y','vx','vy','r','longHookUntil']);
           copy(left,  s.left,  ['x','y','vx','vy','r','longHookUntil']);
@@ -517,29 +458,46 @@
           runes.length=0; for(const r of s.runes) runes.push({...r});
           visionLeftUntil = s.visionLeftUntil || 0;
           visionRightUntil = s.visionRightUntil || 0;
-          // right cooldown UI
           cdRightUntil = s.cdRightUntil || 0; updateCooldownUI();
-          // river offset
-          riverOff = s.riverOff || 0;
-        }
+        },
+        hostThrowLeft(x,y){ if(leftHook.state==='idle'){ const ang=Math.atan2(y-left.y, x-left.x); leftHook.state='flying'; leftHook.x=left.x; leftHook.y=left.y; leftHook.vx=Math.cos(ang)*HOOK_SPEED; leftHook.vy=Math.sin(ang)*HOOK_SPEED; leftHook.startX=left.x; leftHook.startY=left.y; } },
+        canThrow(){ return canThrowRight() },
+        throwRight(x,y){ if(canThrowRight()){ throwHook(rightHook,x,y); setRightCD(1200) } }
       };
     }
 
     let engine=null, prev=performance.now();
     function loop(now){
       const dt=Math.min(0.033,(now-prev)/1000); prev=now;
+      if(screen==='home'){ drawBackground(dt); }
       if(screen==='game' && engine){ engine.update(dt); engine.render(); }
       requestAnimationFrame(loop);
     }
     requestAnimationFrame(loop);
 
-    function startMatchSP(){ closeMpPanels(); engine && engine.cleanup && engine.cleanup(); engine=createEngine({mode:'sp'}); screen='game'; }
+    function startMatchSP(){ showHome(false); showGameUI(true); closeMpPanels(); engine && engine.cleanup && engine.cleanup(); engine=createEngine({mode:'sp'}); screen='game'; }
 
     // ===== Multiplayer via PeerJS =====
     let peer=null, conn=null, roomCode=null, hostNet=null;
 
     function makeRoomCode(){ return String(Math.floor(10000+Math.random()*90000)) }
     function roomIdFromCode(code){ return 'hookarena-'+code }
+
+    function openMpMenu(){ mpMenu.style.display='block'; mpHost.style.display='none'; mpJoin.style.display='none'; }
+    function closeMpPanels(){ mpMenu.style.display='none'; mpHost.style.display='none'; mpJoin.style.display='none'; }
+
+    btnCloseMp.onclick=()=>{ closeMpPanels(); };
+    btnHost.onclick=()=>{ createLobby(); };
+    btnJoin.onclick=()=>{
+      mpMenu.style.display='none'; mpJoin.style.display='block'; joinStatus.textContent='';
+      joinCodeEl.value=''; joinCodeEl.focus({preventScroll:true}); joinCodeEl.select && joinCodeEl.select();
+    };
+    btnHostBack.onclick=()=>{ closeMpPanels(); };
+    btnJoinBack.onclick=()=>{ openMpMenu(); };
+
+    // numeric filter
+    joinCodeEl.addEventListener('input', ()=>{ joinCodeEl.value=(joinCodeEl.value||'').replace(/\D+/g,'').slice(0,5); });
+    joinCodeEl.addEventListener('keydown', e=>{ if(e.key==='Enter'){ btnJoinGo.click(); } });
 
     function createLobby(){
       openMpMenu(); mpMenu.style.display='none'; mpHost.style.display='block'; hostPlayers.textContent='admin (ты)'; hostStatus.textContent='';
@@ -558,21 +516,12 @@
       }catch(e){ hostStatus.textContent='PeerJS не доступен (нужен HTTPS).'; }
     }
 
-    btnStartMp.onclick=()=>{
-      if(conn && conn.open){
-        conn.send({t:'start'});
-        startMatchMPHost();
-      }
-    };
+    btnStartMp.onclick=()=>{ if(conn && conn.open){ conn.send({t:'start'}); startMatchMPHost(); } };
 
     function startMatchMPHost(){
+      showHome(false); showGameUI(true);
       closeMpPanels();
-      hostNet = {
-        conn,
-        broadcast(msg){ try{ conn && conn.open && conn.send(msg) }catch(e){} },
-        lastInput:null,
-        send(){}
-      };
+      hostNet = { conn, broadcast(msg){ try{ conn && conn.open && conn.send(msg) }catch(e){} }, lastInput:null, send(){} };
       engine && engine.cleanup && engine.cleanup();
       engine = createEngine({mode:'mpHost', net: hostNet});
       screen='game';
@@ -585,19 +534,15 @@
     }
 
     function startMatchMPClient(){
+      showHome(false); showGameUI(true);
       closeMpPanels();
       engine && engine.cleanup && engine.cleanup();
-      const net = {
-        conn,
-        send(msg){ try{ conn && conn.open && conn.send(msg) }catch(e){} }
-      };
+      const net = { conn, send(msg){ try{ conn && conn.open && conn.send(msg) }catch(e){} } };
       engine = createEngine({mode:'mpClient', net});
-      // Client net handlers
       conn.on('data', msg=>{
         if(!msg) return;
         if(msg.t==='state'){ engine.applyRemoteState && engine.applyRemoteState(msg.s); }
         if(msg.t==='end'){ showModal(msg.winner==='admin' ? 'Поражение' : 'Победа!', msg.winner==='admin' ? 'Хост утопил тебя.' : 'Ты утопил хоста.'); screen='over'; }
-        if(msg.t==='clickEcho'){ /* could draw effects if needed */ }
       });
       screen='game';
     }
@@ -619,8 +564,19 @@
       }catch(e){ joinStatus.textContent='PeerJS не доступен (нужен HTTPS).'; }
     };
 
-    // Initial tab
-    tabs[0].click();
+    // Show home on load
+    showHome(true); showGameUI(false);
+
+    // Drawing helpers for background
+    function roundRect(ctx, x, y, w, h, r, fill, stroke){
+      if(typeof r === 'number'){ r={tl:r,tr:r,br:r,bl:r} }
+      ctx.beginPath();
+      ctx.moveTo(x+r.tl,y); ctx.lineTo(x+w-r.tr,y); ctx.quadraticCurveTo(x+w,y,x+w,y+r.tr);
+      ctx.lineTo(x+w,y+h-r.br); ctx.quadraticCurveTo(x+w,y+h,x+w-r.br,y+h);
+      ctx.lineTo(x+r.bl,y+h); ctx.quadraticCurveTo(x,y+h,x,y+h-r.bl);
+      ctx.lineTo(x,y+r.tl); ctx.quadraticCurveTo(x,y,x+r.tl,y); ctx.closePath();
+      if(fill) ctx.fill(); if(stroke) ctx.stroke();
+    }
   })();
   </script>
 </body>
