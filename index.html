@@ -3,113 +3,21 @@
 <head>
 <meta charset="utf-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>Hook Arena — MP r21 (cluster-rotate)</title>
+<title>Hook Arena — главное меню</title>
 <style>
-  html,body{height:100%;margin:0;background:#0b0f17}
-  .mpPanel{position:fixed;left:50%;top:50%;transform:translate(-50%,-50%);background:#0b1220;border:1px solid #334155;border-radius:12px;padding:16px 18px;color:#e5e7eb;min-width:340px}
-  .title{font:18px/1.3 system-ui,sans-serif;margin-bottom:10px}
-  .row{margin:8px 0}
-  .badge{display:inline-block;padding:4px 8px;border:1px solid #334155;border-radius:8px;background:#0f172a;margin-left:8px}
-  .list{border:1px dashed #334155;border-radius:8px;padding:8px 10px;font:14px system-ui}
-  .btn{background:#1f2937;border:1px solid #334155;color:#e5e7eb;border-radius:10px;padding:8px 14px;cursor:pointer}
+  html,body{height:100%;margin:0;background:#0b0f17;display:flex;align-items:center;justify-content:center;color:#e5e7eb;font-family:system-ui,sans-serif}
+  .menu{display:flex;flex-direction:column;gap:12px;text-align:center}
+  .menu h1{margin-bottom:6px;font-size:22px}
+  .btn{display:block;padding:12px 20px;border:1px solid #334155;border-radius:10px;background:#1f2937;color:#e5e7eb;text-decoration:none;font-weight:600}
   .btn.primary{background:#2563eb;border-color:#1d4ed8}
-  .rowBtns{display:flex;gap:10px;flex-wrap:wrap}
-  .diag{position:fixed;left:10px;bottom:10px;color:#9ca3af;font:12px/1.3 ui-monospace,monospace;max-width:80vw;white-space:pre-wrap}
 </style>
-<script src="https://unpkg.com/peerjs@1.5.2/dist/peerjs.min.js"></script>
 </head>
 <body>
-  <div id="host" class="mpPanel">
-    <div class="title">Лобби (host: <b>admin</b>) <span id="srv" class="badge"></span></div>
-    <div class="row">Код комнаты: <b id="code">-----</b></div>
-    <div class="row">Игроки:</div>
-    <div id="players" class="list">admin (ты)</div>
-    <div class="row rowBtns">
-      <button id="start" class="btn primary" disabled>Начать игру</button>
-      <button id="switch" class="btn">Сменить сервер</button>
-      <button id="regen" class="btn">Новый код</button>
-    </div>
-    <div id="status" class="row" style="opacity:.9"></div>
+  <div class="menu">
+    <h1>Выберите режим</h1>
+    <a class="btn" href="single.html">Одиночная игра</a>
+    <a class="btn" href="host.html">Создать мультиплеерную игру</a>
+    <a class="btn" href="join.html">Присоединиться к игре</a>
   </div>
-  <div id="game" class="mpPanel" style="display:none">
-    <div class="title">Click Battle</div>
-    <div class="row">Ты: <b id="hostScore">0</b></div>
-    <div class="row">Соперник: <b id="userScore">0</b></div>
-    <button id="hostClick" class="btn primary">Клик!</button>
-    <div id="gameStatus" class="row" style="opacity:.9"></div>
-  </div>
-  <div id="diag" class="diag"></div>
-<script>
-(()=>{
-  const clouds=['0.peerjs.com','1.peerjs.com','2.peerjs.com'];
-  let cloudIdx=0, code='-----', peer=null, conn=null, lossCount=0;
-  const srvEl=document.getElementById('srv'), codeEl=document.getElementById('code'), players=document.getElementById('players'), status=document.getElementById('status');
-  const startBtn=document.getElementById('start'), switchBtn=document.getElementById('switch'), regenBtn=document.getElementById('regen');
-  const hostPanel=document.getElementById('host'), gamePanel=document.getElementById('game');
-  const hostScoreEl=document.getElementById('hostScore'), userScoreEl=document.getElementById('userScore'), hostClick=document.getElementById('hostClick'), gameStatus=document.getElementById('gameStatus');
-  const diag=document.getElementById('diag');
-  let score={host:0,user:0};
-  function log(s){ diag.textContent=(diag.textContent+'\\n'+s).trim().slice(-2000) }
-  function makeCode(){ return String(Math.floor(10000+Math.random()*90000)) }
-  function roomId(c){ return 'hookarena-'+c }
-  function opts(){ return {host:clouds[cloudIdx], port:443, secure:true, path:'/peerjs', debug:1, pingInterval:5000,
-    config:{iceServers:[{urls:'stun:stun.l.google.com:19302'},{urls:'stun:global.stun.twilio.com:3478'},
-      {urls:['turn:openrelay.metered.ca:80','turn:openrelay.metered.ca:443','turn:openrelay.metered.ca:443?transport=tcp'],username:'openrelayproject',credential:'openrelayproject'}]}} }
-  function mount(){
-    code = makeCode(); codeEl.textContent=code; srvEl.textContent='сервер: '+clouds[cloudIdx]; players.textContent='admin (ты)'; startBtn.disabled=true; status.textContent='Создание подключений...';
-    startPeer();
-  }
-  function startPeer(){
-    lossCount=0;
-    try{ peer?.destroy?.() }catch(_){}
-    peer = new Peer(roomId(code), opts());
-    peer.on('open', id=>{ status.textContent='Ожидание подключения...'; log('open@'+clouds[cloudIdx]+': '+id) });
-    peer.on('connection', c=>{
-      conn=c; players.textContent='admin (ты)\nuser'; status.textContent='Игрок подключился.'; startBtn.disabled=false;
-      c.on('data',d=>{ if(d.type==='click'){ score.user++; updateScore(); conn.send({type:'score',score}); checkWin(); } });
-      c.on('close',()=>log('conn close'));
-      c.on('error',e=>log('conn err '+e));
-    });
-    peer.on('error', e=>{ log('peer error '+e); status.textContent='Ошибка: '+e; onLost() });
-    peer.on('disconnected', ()=>{ log('disconnected'); status.textContent='Потеряна связь с сервером, переподключение...'; onLost() });
-    peer.on('close', ()=>{ log('close'); status.textContent='Соединение закрыто, переподключение...'; onLost() });
-  }
-  function onLost(){
-    lossCount++;
-    if(lossCount%3===0){ // каждые 3 неудачные попытки — смена кластера + новый код
-      cloudIdx=(cloudIdx+1)%clouds.length;
-      code = makeCode(); codeEl.textContent=code; srvEl.textContent='сервер: '+clouds[cloudIdx];
-      log('rotate → '+clouds[cloudIdx]+', new code '+code);
-      setTimeout(()=>startPeer(), 800);
-    }else{
-      setTimeout(()=>{ log('reconnect try '+lossCount); try{ peer.reconnect() }catch(_){ startPeer() } }, 800);
-    }
-  }
-  switchBtn.onclick=()=>{ cloudIdx=(cloudIdx+1)%clouds.length; onLost() };
-  regenBtn.onclick=()=>{ code=makeCode(); startPeer() };
-  startBtn.onclick=()=>{
-    conn?.send({type:'start'});
-    startGame();
-    conn?.send({type:'score',score});
-  };
-  hostClick.onclick=()=>{
-    score.host++; updateScore(); conn?.send({type:'score',score}); checkWin();
-  };
-  function startGame(){
-    score={host:0,user:0}; updateScore();
-    hostPanel.style.display='none'; gamePanel.style.display='block'; hostClick.disabled=false;
-    gameStatus.textContent='Игра началась!';
-  }
-  function updateScore(){ hostScoreEl.textContent=score.host; userScoreEl.textContent=score.user; }
-  function checkWin(){
-    if(score.host>=10 || score.user>=10){
-      const win=score.host>score.user?'Ты победил!':'Соперник победил';
-      gameStatus.textContent=win; hostClick.disabled=true;
-      conn?.send({type:'end',score});
-    }
-  }
-  mount();
-})();
-</script>
 </body>
 </html>
